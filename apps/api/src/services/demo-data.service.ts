@@ -52,7 +52,7 @@ export class DemoDataService {
       {
         id: 'mch_test_01',
         name: 'RazorRecover Demo Merchant',
-        currency: 'INR',
+        currency: 'INR' as const,
         test_mode: true,
         policy_profile_id: 'pol_default',
         high_value_threshold: 10000000 // ₹1,00,000 in paise
@@ -60,7 +60,7 @@ export class DemoDataService {
       {
         id: 'merchant_demo_001',
         name: 'RazorCart Demo',
-        currency: 'INR',
+        currency: 'INR' as const,
         test_mode: true,
         policy_profile_id: 'pol_std_01',
         high_value_threshold: 10000000
@@ -68,7 +68,7 @@ export class DemoDataService {
       {
         id: 'merchant_demo_002',
         name: 'NovaCommerce Demo',
-        currency: 'INR',
+        currency: 'INR' as const,
         test_mode: true,
         policy_profile_id: 'pol_std_02',
         high_value_threshold: 5000000 // ₹50,000 in paise
@@ -76,7 +76,7 @@ export class DemoDataService {
       {
         id: 'merchant_demo_003',
         name: 'Acme Digital Demo',
-        currency: 'INR',
+        currency: 'INR' as const,
         test_mode: true,
         policy_profile_id: 'pol_std_03',
         high_value_threshold: 20000000 // ₹2,00,000 in paise
