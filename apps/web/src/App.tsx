@@ -45,40 +45,37 @@ export function App() {
         setHealthStatus('HEALTHY'); // fallback in dev mode
       }
 
-      // 1. Dashboard Summary
-      const sum = await api.getDashboardSummary();
-      setSummary(sum);
+      const [sumRes, leakRes, queueRes, auditRes, evalRes, setRes] = await Promise.allSettled([
+        api.getDashboardSummary(),
+        api.getRevenueLeaks({ dateRange }),
+        api.getRecoveryCases({
+          status: statusFilter === 'ALL' ? undefined : statusFilter,
+          search: searchQuery || undefined,
+          page: queuePage,
+          limit: 20
+        }),
+        api.getAuditEvents({ limit: 50 }),
+        api.getEvaluationSummary(),
+        api.getMerchantSettings()
+      ]);
 
-      // 2. Revenue Leaks Analytics
-      const leakRes = await api.getRevenueLeaks({ dateRange });
-      setAnalytics(leakRes);
+      if (sumRes.status === 'fulfilled') setSummary(sumRes.value);
+      if (leakRes.status === 'fulfilled') setAnalytics(leakRes.value);
+      if (queueRes.status === 'fulfilled') {
+        setCases(queueRes.value?.cases || []);
+        setTotalCases(queueRes.value?.total || 0);
+      }
+      if (auditRes.status === 'fulfilled') setAuditData(auditRes.value);
+      if (evalRes.status === 'fulfilled') setEvalData(evalRes.value);
+      if (setRes.status === 'fulfilled') setSettingsData(setRes.value);
 
-      // 3. Recovery Queue Cases
-      const queueRes = await api.getRecoveryCases({
-        status: statusFilter === 'ALL' ? undefined : statusFilter,
-        search: searchQuery || undefined,
-        page: queuePage,
-        limit: 20
-      });
-      setCases(queueRes.cases || []);
-      setTotalCases(queueRes.total || 0);
-
-      // 4. Audit Trail
-      const auditRes = await api.getAuditEvents({ limit: 50 });
-      setAuditData(auditRes);
-
-      // 5. Evaluation Benchmark
-      const evalRes = await api.getEvaluationSummary();
-      setEvalData(evalRes);
-
-      // 6. Merchant Settings
-      const setRes = await api.getMerchantSettings();
-      setSettingsData(setRes);
-
-      // If inspecting a specific case, refetch its details
       if (selectedCaseId) {
-        const detailRes = await api.getRecoveryCaseDetail(selectedCaseId);
-        setCaseDetail(detailRes);
+        try {
+          const detailRes = await api.getRecoveryCaseDetail(selectedCaseId);
+          setCaseDetail(detailRes);
+        } catch (e) {
+          console.error('Failed to load case detail:', e);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);

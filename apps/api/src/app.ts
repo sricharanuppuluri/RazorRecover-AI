@@ -8,10 +8,16 @@ import healthRoutes from './routes/health.routes';
 import apiRoutes from './routes';
 import { env } from './config/env';
 import { HealthController } from './controllers/health.controller';
+import { DemoDataService } from './services/demo-data.service';
 
 const healthController = new HealthController();
 
 export function createApp(): Express {
+  // Ensure synthetic demo data is seeded for local/offline run
+  DemoDataService.seedAll().catch((err) => {
+    console.warn('[DemoDataService] Background seed warning:', err.message);
+  });
+
   const app = express();
 
   // Security Headers

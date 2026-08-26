@@ -40,7 +40,7 @@ export const api = {
   // Revenue Leaks Analytics
   getRevenueLeaks: (params?: { dateRange?: string; category?: string }) => {
     const q = new URLSearchParams(params as any).toString();
-    return fetchJSON<any>(`/analytics/leaks${q ? `?${q}` : ''}`);
+    return fetchJSON<any>(`/analytics/revenue-leaks${q ? `?${q}` : ''}`);
   },
 
   // Recovery Queue & Cases

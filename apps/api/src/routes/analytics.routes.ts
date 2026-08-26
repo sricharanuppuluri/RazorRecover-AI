@@ -10,6 +10,7 @@ const exportController = new ExportController();
 router.use(authenticate);
 
 router.get('/revenue-leaks', requireRole('VIEWER', 'OPERATOR', 'ADMIN', 'OWNER'), getRevenueLeaksController);
+router.get('/leaks', requireRole('VIEWER', 'OPERATOR', 'ADMIN', 'OWNER'), getRevenueLeaksController);
 router.get('/export/cases', requireRole('VIEWER', 'OPERATOR', 'ADMIN', 'OWNER'), exportController.exportCasesCsv);
 router.get('/export/audit', requireRole('VIEWER', 'OPERATOR', 'ADMIN', 'OWNER'), exportController.exportAuditCsv);
 

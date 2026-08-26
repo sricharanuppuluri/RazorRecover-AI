@@ -19,6 +19,8 @@
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "db:rollback": "npm run db:rollback --workspace=apps/api",
     "db:seed": "npm run db:seed --workspace=apps/api",
+    "demo:seed": "npm run demo:seed --workspace=apps/api",
+    "demo:reset": "npm run demo:reset --workspace=apps/api",
     "evaluate": "tsx packages/evaluation/src/cli.ts",
     "test": "tsx --test tests/integration/*.test.ts tests/unit/*.test.ts"
   },
