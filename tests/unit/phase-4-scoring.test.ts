@@ -158,4 +158,171 @@ describe('Phase 4 — Failure Taxonomy & Recovery Risk Scoring Engine', () => {
       assert.ok(analysis.recoveryCaseId);
     });
   });
+
+  describe('Required Edge Cases (Verification Suite)', () => {
+    test('12. Handles order amount = 0 safely', () => {
+      const result = scoringService.calculate({
+        orderAmount: 0,
+        capturedAmount: 0,
+        category: 'TEMPORARY_BANK_DEGRADATION'
+      });
+      assert.strictEqual(result.amountAtRisk, 0);
+      assert.strictEqual(result.recoveryProbability, 0.0);
+      assert.strictEqual(result.expectedRecoveryValue, 0);
+      assert.strictEqual(result.priorityScore, 0);
+    });
+
+    test('13. Handles captured amount > order amount safely', () => {
+      const result = scoringService.calculate({
+        orderAmount: 500000,
+        capturedAmount: 600000,
+        category: 'CUSTOMER_AUTHENTICATION_ISSUE'
+      });
+      assert.strictEqual(result.amountAtRisk, 0);
+      assert.strictEqual(result.expectedRecoveryValue, 0);
+      assert.strictEqual(result.priorityScore, 0);
+    });
+
+    test('14. Handles very large monetary amount without integer overflow or float precision loss', () => {
+      const largeAmount = 100000000000; // ₹1,000,000,000 in paise (₹100 Crore)
+      const result = scoringService.calculate({
+        orderAmount: largeAmount,
+        capturedAmount: 0,
+        category: 'TEMPORARY_BANK_DEGRADATION' // 0.85 - 0.05 (highValue) = 0.80
+      });
+      assert.strictEqual(result.amountAtRisk, largeAmount);
+      assert.strictEqual(result.highValue, true);
+      assert.strictEqual(result.recoveryProbability, 0.80);
+      assert.strictEqual(result.expectedRecoveryValue, 80000000000); // 80% of ₹100 Crore = ₹80 Crore
+      assert.strictEqual(Number.isInteger(result.expectedRecoveryValue), true);
+      assert.strictEqual(Number.isInteger(result.priorityScore), true);
+    });
+
+    test('15. Handles context with no customer history (0 previous successes)', () => {
+      const result = scoringService.calculate({
+        orderAmount: 100000,
+        category: 'CUSTOMER_AUTHENTICATION_ISSUE',
+        previousSuccessCount: 0
+      });
+      assert.strictEqual(result.recoveryProbability, 0.70);
+      assert.strictEqual(result.customerIntentFactor, 1.0);
+    });
+
+    test('16. Handles context with no bank information or missing error reason', () => {
+      const diag = diagnosisService.diagnose({
+        paymentStatus: 'FAILED',
+        bank: undefined,
+        errorReason: undefined
+      });
+      assert.strictEqual(diag.category, 'UNKNOWN_OR_AMBIGUOUS');
+
+      const score = scoringService.calculate({
+        orderAmount: 200000,
+        category: diag.category
+      });
+      assert.strictEqual(score.recoveryProbability, 0.30);
+    });
+
+    test('17. Handles repeated failures (high failure count)', () => {
+      const diag = diagnosisService.diagnose({ failureCount: 5 });
+      assert.strictEqual(diag.category, 'REPEATED_FAILURE');
+
+      const score = scoringService.calculate({
+        orderAmount: 300000,
+        category: diag.category,
+        failureCount: 5
+      });
+      // Base 0.20 - min(0.20, (5-1)*0.05) = 0.0
+      assert.strictEqual(score.recoveryProbability, 0.0);
+      assert.strictEqual(score.expectedRecoveryValue, 0);
+    });
+
+    test('18. Handles conflicting failure signals (ALREADY_CAPTURED takes precedence)', () => {
+      const diag = diagnosisService.diagnose({
+        paymentStatus: 'CAPTURED',
+        failureCount: 5,
+        errorCode: 'BAD_REQUEST_INSUFFICIENT_BALANCE',
+        errorDescription: 'Insufficient funds'
+      });
+      assert.strictEqual(diag.category, 'ALREADY_CAPTURED');
+      assert.strictEqual(diag.confidence, 1.0);
+    });
+
+    test('19. Handles already captured payment and already paid order', () => {
+      const diag1 = diagnosisService.diagnose({ paymentStatus: 'CAPTURED' });
+      assert.strictEqual(diag1.category, 'ALREADY_CAPTURED');
+
+      const diag2 = diagnosisService.diagnose({ orderStatus: 'PAID' });
+      assert.strictEqual(diag2.category, 'ALREADY_CAPTURED');
+    });
+
+    test('20. Evaluates high-value threshold boundaries (exact, 1 below, 1 above)', () => {
+      const threshold = 10000000; // ₹1,00,000
+
+      // Exact threshold
+      const scoreExact = scoringService.calculate({
+        orderAmount: 10000000,
+        category: 'TEMPORARY_BANK_DEGRADATION',
+        highValueThreshold: threshold
+      });
+      assert.strictEqual(scoreExact.highValue, true);
+
+      // 1 unit below threshold
+      const scoreBelow = scoringService.calculate({
+        orderAmount: 9999999,
+        category: 'TEMPORARY_BANK_DEGRADATION',
+        highValueThreshold: threshold
+      });
+      assert.strictEqual(scoreBelow.highValue, false);
+
+      // 1 unit above threshold
+      const scoreAbove = scoringService.calculate({
+        orderAmount: 10000001,
+        category: 'TEMPORARY_BANK_DEGRADATION',
+        highValueThreshold: threshold
+      });
+      assert.strictEqual(scoreAbove.highValue, true);
+    });
+
+    test('21. Bounds recovery probability strictly between 0 and 1', () => {
+      // Test lower bound (0.0)
+      const scoreMin = scoringService.calculate({
+        orderAmount: 500000,
+        category: 'REPEATED_FAILURE', // base 0.20
+        failureCount: 5, // -0.20 penalty
+        recentBankFailureRate: 0.30 // -0.10 penalty
+      });
+      assert.strictEqual(scoreMin.recoveryProbability, 0.0);
+      assert.strictEqual(scoreMin.expectedRecoveryValue, 0);
+
+      // Test upper bound (1.0)
+      const scoreMax = scoringService.calculate({
+        orderAmount: 500000,
+        category: 'TEMPORARY_BANK_DEGRADATION', // base 0.85
+        previousSuccessCount: 3, // +0.10 bonus
+        contactOptIn: true // +0.05 bonus
+      });
+      assert.strictEqual(scoreMax.recoveryProbability, 1.0);
+      assert.strictEqual(scoreMax.expectedRecoveryValue, 500000);
+    });
+
+    test('22. Guarantees deterministic repeated calculations (identical context -> identical output)', () => {
+      const context = {
+        orderAmount: 850000,
+        capturedAmount: 0,
+        category: 'CUSTOMER_AUTHENTICATION_ISSUE' as const,
+        previousSuccessCount: 1,
+        failureCount: 1,
+        recentBankFailureRate: 0.1,
+        contactOptIn: true
+      };
+
+      const run1 = scoringService.calculate(context);
+      const run2 = scoringService.calculate(context);
+      const run3 = scoringService.calculate(context);
+
+      assert.deepStrictEqual(run1, run2);
+      assert.deepStrictEqual(run2, run3);
+    });
+  });
 });

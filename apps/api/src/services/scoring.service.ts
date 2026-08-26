@@ -28,6 +28,11 @@ export class ScoringService {
 
   /**
    * Calculates deterministic revenue risk, recovery probability, expected recovery value, and priority score.
+   * Precision strategy: Monetary amounts are maintained in integer smallest currency units (paise).
+   * Expected recovery value is computed via integer-safe basis-point arithmetic:
+   * basisPoints = Math.round(recoveryProbability * 10000)
+   * expectedRecoveryValue = (BigInt(amountAtRisk) * BigInt(basisPoints)) / 10000n
+   * This eliminates floating-point rounding precision issues on large monetary amounts.
    */
   public calculate(context: ScoringInputContext): ScoringOutput {
     const {
@@ -43,7 +48,8 @@ export class ScoringService {
     } = context;
 
     // 1. Calculate Revenue At Risk (Paise)
-    const amountAtRisk = Math.max(0, orderAmount - capturedAmount);
+    const rawRisk = Math.max(0, Math.floor(orderAmount) - Math.floor(capturedAmount));
+    const amountAtRisk = rawRisk;
     const highValue = amountAtRisk >= highValueThreshold;
 
     // If already captured or zero risk, zero out probability and values
@@ -119,8 +125,10 @@ export class ScoringService {
     const rawProbability = baseProbability + probabilityModifier;
     const recoveryProbability = Math.max(0.0, Math.min(1.0, Math.round(rawProbability * 10000) / 10000));
 
-    // 3. Expected Recovery Value (Paise - Integer Safe)
-    const expectedRecoveryValue = Math.floor(amountAtRisk * recoveryProbability);
+    // 3. Expected Recovery Value (Basis-Point BigInt Integer Safe)
+    const basisPoints = BigInt(Math.round(recoveryProbability * 10000));
+    const safeRisk = BigInt(amountAtRisk);
+    const expectedRecoveryValue = Number((safeRisk * basisPoints) / 10000n);
 
     // 4. Deterministic Priority Factors
     // Urgency Factor: 1.0 down to 0.5 based on elapsed hours up to 24h
@@ -173,7 +181,7 @@ export class ScoringService {
     // 5. Priority Score Calculation
     // Integer-safe deterministic formula: priority_score = Math.floor(expected_recovery_value * urgency * intent * feasibility)
     const rawScore = expectedRecoveryValue * urgencyFactor * customerIntentFactor * actionFeasibilityFactor;
-    const priorityScore = Math.max(0, Math.floor(rawScore));
+    const priorityScore = (isNaN(rawScore) || !isFinite(rawScore)) ? 0 : Math.max(0, Math.floor(rawScore));
 
     return {
       amountAtRisk,
@@ -187,3 +195,4 @@ export class ScoringService {
     };
   }
 }
+
