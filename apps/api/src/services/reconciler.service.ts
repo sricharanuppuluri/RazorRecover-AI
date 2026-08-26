@@ -1,6 +1,7 @@
 import { Payment, Order, PaymentStatus, OrderStatus } from '@razorrecover/shared-types';
 import { PaymentRepository } from '../repositories/payment.repository';
 import { OrderRepository } from '../repositories/order.repository';
+import { RecoveryCaseRepository } from '../repositories/recovery-case.repository';
 import { AuditService } from './audit.service';
 
 export interface ReconciliationResult {
@@ -13,6 +14,7 @@ export interface ReconciliationResult {
 export class PaymentStateReconciler {
   private paymentRepo = new PaymentRepository();
   private orderRepo = new OrderRepository();
+  private recoveryCaseRepo = new RecoveryCaseRepository();
   private auditService = new AuditService();
 
   /**
@@ -318,6 +320,9 @@ export class PaymentStateReconciler {
       }
     }
 
+    // 3. Reconcile associated Recovery Case (Outcome Observer)
+    await this.reconcileRecoveryCaseOutcome(order?.id, payment?.id, amount || order?.amount || 0, correlationId);
+
     await this.auditService.logEvent({
       merchantId,
       eventType: 'payment_captured',
@@ -391,6 +396,9 @@ export class PaymentStateReconciler {
       }
     }
 
+    // 3. Reconcile associated Recovery Case (Outcome Observer)
+    await this.reconcileRecoveryCaseOutcome(order?.id, payment?.id, order?.amount || payment?.amount || 0, correlationId);
+
     await this.auditService.logEvent({
       merchantId,
       eventType: 'order_paid',
@@ -402,5 +410,44 @@ export class PaymentStateReconciler {
     });
 
     return { status: 'reconciled', order, payment };
+  }
+
+  /**
+   * Helper: Outcome Observer — transition associated active recovery case to RECOVERED upon trusted payment success.
+   */
+  private async reconcileRecoveryCaseOutcome(
+    orderId?: string,
+    paymentId?: string,
+    recoveredAmount: number = 0,
+    correlationId: string = ''
+  ): Promise<void> {
+    try {
+      let rc = paymentId ? await this.recoveryCaseRepo.findByPaymentId(paymentId) : null;
+      if (!rc && orderId) {
+        rc = await this.recoveryCaseRepo.findByOrderId(orderId);
+      }
+
+      if (rc && rc.status !== 'RECOVERED' && rc.status !== 'STOPPED') {
+        const amount = recoveredAmount || rc.amount_at_risk;
+        await this.recoveryCaseRepo.updateStatus(rc.id, 'RECOVERED', {
+          closedAt: new Date().toISOString(),
+          closeReason: 'PAYMENT_CAPTURED',
+          recoveredAmount: amount
+        });
+
+        await this.auditService.logEvent({
+          merchantId: rc.merchant_id,
+          recoveryCaseId: rc.id,
+          eventType: 'RECOVERY_CASE_RECOVERED',
+          actorType: 'system',
+          action: 'RECOVER_CASE_WEBHOOK',
+          outcome: 'RECOVERED',
+          decisionSummary: `Trusted webhook confirmed payment capture (${amount} paise). Case marked RECOVERED.`,
+          correlationId
+        });
+      }
+    } catch (err) {
+      console.warn('[PaymentStateReconciler] Failed to reconcile recovery case outcome:', (err as Error).message);
+    }
   }
 }

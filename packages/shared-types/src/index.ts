@@ -175,6 +175,39 @@ export interface PolicyDecision {
   created_at: string;
 }
 
+export type RecoveryActionStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED';
+
+export interface RecoveryAction {
+  id: string;
+  recovery_case_id: string;
+  merchant_id: string;
+  action_type: AllowedAction;
+  status: RecoveryActionStatus;
+  correlation_id: string;
+  idempotency_key: string;
+  attempt_number: number;
+  requested_at: string;
+  started_at?: string;
+  completed_at?: string;
+  expires_at?: string;
+  result_summary?: string;
+  error_code?: string;
+  error_message?: string;
+  simulation?: boolean;
+}
+
+export interface RecoveryLink {
+  id: string;
+  recovery_case_id: string;
+  merchant_id: string;
+  order_id: string;
+  token_hash: string;
+  token_raw?: string;
+  expires_at: string;
+  used_at?: string;
+  created_at: string;
+}
+
 export type ActorType = 'system' | 'ai' | 'merchant' | 'customer';
 
 export interface AuditEvent {

@@ -190,4 +190,69 @@ export class RecoveryCaseRepository {
       return record || null;
     }
   }
+
+  public async updateStatus(
+    id: string,
+    status: RecoveryCase['status'],
+    extra?: { closedAt?: string; closeReason?: string; recoveredAmount?: number }
+  ): Promise<RecoveryCase | null> {
+    let record = RecoveryCaseRepository.memoryStore.get(id);
+    if (record) {
+      record.status = status;
+      if (extra?.closedAt) record.closed_at = extra.closedAt;
+      if (extra?.closeReason) record.close_reason = extra.closeReason;
+      if (extra?.recoveredAmount !== undefined) record.recovered_amount = extra.recoveredAmount;
+      RecoveryCaseRepository.memoryStore.set(id, record);
+    }
+
+    try {
+      const pool = getDbPool();
+      const query = `
+        UPDATE recovery_cases
+        SET status = $1,
+            closed_at = COALESCE($2, closed_at),
+            close_reason = COALESCE($3, close_reason),
+            recovered_amount = COALESCE($4, recovered_amount)
+        WHERE id = $5
+        RETURNING *;
+      `;
+      const values = [status, extra?.closedAt || null, extra?.closeReason || null, extra?.recoveredAmount ?? null, id];
+      const { rows } = await pool.query(query, values);
+      return rows[0] || record || null;
+    } catch (err: any) {
+      return record || null;
+    }
+  }
+
+  public async incrementRetryCount(id: string): Promise<RecoveryCase | null> {
+    let record = RecoveryCaseRepository.memoryStore.get(id);
+    if (record) {
+      record.retry_count = (record.retry_count || 0) + 1;
+      RecoveryCaseRepository.memoryStore.set(id, record);
+    }
+
+    try {
+      const pool = getDbPool();
+      const { rows } = await pool.query('UPDATE recovery_cases SET retry_count = retry_count + 1 WHERE id = $1 RETURNING *', [id]);
+      return rows[0] || record || null;
+    } catch (err: any) {
+      return record || null;
+    }
+  }
+
+  public async incrementNotificationCount(id: string): Promise<RecoveryCase | null> {
+    let record = RecoveryCaseRepository.memoryStore.get(id);
+    if (record) {
+      record.notification_count = (record.notification_count || 0) + 1;
+      RecoveryCaseRepository.memoryStore.set(id, record);
+    }
+
+    try {
+      const pool = getDbPool();
+      const { rows } = await pool.query('UPDATE recovery_cases SET notification_count = notification_count + 1 WHERE id = $1 RETURNING *', [id]);
+      return rows[0] || record || null;
+    } catch (err: any) {
+      return record || null;
+    }
+  }
 }

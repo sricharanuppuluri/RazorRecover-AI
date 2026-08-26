@@ -67,4 +67,16 @@ export class PolicyDecisionRepository {
 
     return null;
   }
+
+  public async findLatestByCaseId(recoveryCaseId: string): Promise<PolicyDecision | null> {
+    return this.findByCaseId(recoveryCaseId);
+  }
+
+  public async saveDecision(record: Partial<PolicyDecision>): Promise<PolicyDecision> {
+    return this.create(record);
+  }
+
+  public clearInMemoryStore(): void {
+    PolicyDecisionRepository.memoryStore.clear();
+  }
 }
