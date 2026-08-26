@@ -130,6 +130,10 @@ export class AuditEventRepository {
     return AuditEventRepository.memoryStore.filter(e => e.merchant_id === merchantId);
   }
 
+  public async findAllByMerchant(merchantId: string): Promise<AuditEvent[]> {
+    return this.listByMerchant(merchantId);
+  }
+
   public async clear(): Promise<void> {
     AuditEventRepository.memoryStore = [];
   }

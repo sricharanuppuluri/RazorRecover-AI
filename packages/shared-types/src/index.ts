@@ -595,6 +595,58 @@ export interface ScheduledReport {
   createdAt: string;
 }
 
+// Phase 14 — Audit Vault Compliance & System Recovery Simulator Types
+export interface AuditVaultProof {
+  merchantId: string;
+  totalEventsCount: number;
+  genesisHash: string;
+  rootMerkleHash: string;
+  isChainIntact: boolean;
+  verifiedAt: string;
+}
+
+export interface ComplianceReport {
+  merchantId: string;
+  soc2Compliant: boolean;
+  gdprCompliant: boolean;
+  piiHashedCount: number;
+  contactOptInCheckPass: boolean;
+  unauthorizedActionsCount: number;
+  policyViolationsCount: number;
+  generatedAt: string;
+}
+
+export type ScenarioType =
+  | 'BANK_DEGRADATION'
+  | 'AUTH_FAILURE'
+  | 'ABANDONED_CHECKOUT'
+  | 'SUBSCRIPTION_RECURRING'
+  | 'VOICE_RECOVERY';
+
+export interface SimulationScenario {
+  id: ScenarioType;
+  title: string;
+  description: string;
+  defaultAmount: number;
+  expectedDiagnosis: string;
+  expectedAction: string;
+}
+
+export interface SimulationScenarioResult {
+  scenarioId: ScenarioType;
+  merchantId: string;
+  orderId: string;
+  paymentId: string;
+  recoveryCaseId: string;
+  diagnosis: string;
+  aiRecommendation: string;
+  policyDecision: string;
+  actionExecuted: string;
+  caseStatus: string;
+  executedAt: string;
+}
+
+
 
 
 

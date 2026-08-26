@@ -24,6 +24,8 @@ import voiceRoutes from './voice.routes';
 import notificationRoutes from './notification.routes';
 import causalAnalysisRoutes from './causal-analysis.routes';
 import scheduledReportRoutes from './scheduled-report.routes';
+import auditComplianceRoutes from './audit-compliance.routes';
+import systemSimulatorRoutes from './system-simulator.routes';
 
 const router = Router();
 
@@ -36,12 +38,14 @@ router.use('/config', configRoutes);
 // Webhook endpoint
 router.use('/webhooks', webhookRoutes);
 
-// Dashboard & Merchant UI Endpoints (Phase 8, 10, 11, 12 & 13)
+// Dashboard & Merchant UI Endpoints (Phase 8, 10, 11, 12, 13 & 14)
 router.use('/dashboard', dashboardRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/evaluation', evaluationRoutes);
 router.use('/simulations', simulationRoutes);
+router.use('/simulator', systemSimulatorRoutes);
 router.use('/audit', auditRoutes);
+router.use('/audit-vault', auditComplianceRoutes);
 router.use('/merchant', merchantSettingsRoutes);
 router.use('/promises', promiseToPayRoutes);
 router.use('/degradation', degradationRoutes);
