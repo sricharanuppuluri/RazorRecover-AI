@@ -20,6 +20,7 @@ export interface Merchant {
   currency: Currency;
   test_mode: boolean;
   policy_profile_id: string;
+  high_value_threshold?: number; // In paise (default: 10000000 = ₹1,00,000)
   created_at: string;
   updated_at: string;
 }
@@ -117,6 +118,7 @@ export interface RecoveryCase {
   expected_recovery_value?: number; // In paise
   diagnosis?: string;
   diagnosis_confidence?: number;
+  priority_score?: number;
   recommended_action?: AllowedAction;
   action_confidence?: number;
   policy_decision?: 'APPROVED' | 'DENIED' | 'HUMAN_REQUIRED';
@@ -208,3 +210,45 @@ export interface RazorpayOrderResponse {
   created_at: number;
 }
 
+// Phase 4 Failure Taxonomy & Recovery Risk Types
+export type FailureCategory =
+  | 'TEMPORARY_BANK_DEGRADATION'
+  | 'CUSTOMER_AUTHENTICATION_ISSUE'
+  | 'INSUFFICIENT_FUNDS'
+  | 'REPEATED_FAILURE'
+  | 'CHECKOUT_ABANDONMENT'
+  | 'HIGH_VALUE_TRANSACTION'
+  | 'UNKNOWN_OR_AMBIGUOUS'
+  | 'ALREADY_CAPTURED';
+
+export type ReasonCode =
+  | 'ALREADY_CAPTURED'
+  | 'REPEATED_FAILURES'
+  | 'AUTHENTICATION_FAILURE'
+  | 'INSUFFICIENT_FUNDS_SIGNAL'
+  | 'RECENT_BANK_FAILURE_SPIKE'
+  | 'RECENT_METHOD_FAILURE_SPIKE'
+  | 'HIGH_VALUE_TRANSACTION'
+  | 'CHECKOUT_TIMEOUT'
+  | 'INSUFFICIENT_EVIDENCE';
+
+export interface DiagnosisResult {
+  category: FailureCategory;
+  explanation: string;
+  confidence: number; // Deterministic rule confidence [0, 1]
+  reasonCodes: ReasonCode[];
+}
+
+export interface RecoveryAnalysisResult {
+  paymentId?: string;
+  orderId?: string;
+  merchantId: string;
+  amountAtRisk: number; // In paise
+  diagnosis: DiagnosisResult;
+  recoveryProbability: number; // Deterministic baseline [0, 1]
+  expectedRecoveryValue: number; // In paise
+  priorityScore: number;
+  highValue: boolean;
+  recoveryCaseId?: string;
+  eligibleForRecovery: boolean;
+}

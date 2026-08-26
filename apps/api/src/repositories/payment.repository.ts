@@ -201,4 +201,61 @@ export class PaymentRepository {
       return record || null;
     }
   }
+
+  public async getRecentFailureRates(bank?: string, method?: string): Promise<{ bankFailureRate: number; methodFailureRate: number }> {
+    let bankTotal = 0;
+    let bankFailed = 0;
+    let methodTotal = 0;
+    let methodFailed = 0;
+
+    // First check memory store
+    for (const payment of PaymentRepository.memoryStore.values()) {
+      if (bank && payment.bank?.toUpperCase() === bank.toUpperCase()) {
+        bankTotal++;
+        if (payment.status === 'FAILED') bankFailed++;
+      }
+      if (method && payment.method?.toUpperCase() === method.toUpperCase()) {
+        methodTotal++;
+        if (payment.status === 'FAILED') methodFailed++;
+      }
+    }
+
+    try {
+      const pool = getDbPool();
+      if (bank) {
+        const { rows } = await pool.query(
+          `SELECT 
+             COUNT(*) as total,
+             COUNT(CASE WHEN status = 'FAILED' THEN 1 END) as failed
+           FROM payments
+           WHERE UPPER(bank) = UPPER($1) AND created_at >= NOW() - INTERVAL '24 hours'`,
+          [bank]
+        );
+        if (rows[0] && parseInt(rows[0].total) > 0) {
+          bankTotal += parseInt(rows[0].total);
+          bankFailed += parseInt(rows[0].failed);
+        }
+      }
+
+      if (method) {
+        const { rows } = await pool.query(
+          `SELECT 
+             COUNT(*) as total,
+             COUNT(CASE WHEN status = 'FAILED' THEN 1 END) as failed
+           FROM payments
+           WHERE UPPER(method) = UPPER($1) AND created_at >= NOW() - INTERVAL '24 hours'`,
+          [method]
+        );
+        if (rows[0] && parseInt(rows[0].total) > 0) {
+          methodTotal += parseInt(rows[0].total);
+          methodFailed += parseInt(rows[0].failed);
+        }
+      }
+    } catch (err: any) {}
+
+    return {
+      bankFailureRate: bankTotal > 0 ? bankFailed / bankTotal : 0,
+      methodFailureRate: methodTotal > 0 ? methodFailed / methodTotal : 0
+    };
+  }
 }
