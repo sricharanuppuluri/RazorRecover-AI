@@ -113,25 +113,30 @@ export const CaseDetailScreen: React.FC<CaseDetailScreenProps> = ({ detail, onBa
           <span>Back to Recovery Queue</span>
         </button>
 
-        {detail.status === 'HUMAN_REVIEW' && (
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={handleApprove}
-              disabled={isProcessing}
-              className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-brand-500/20 disabled:opacity-50"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Approve & Execute</span>
-            </button>
-            <button
-              onClick={handleReject}
-              disabled={isProcessing}
-              className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center space-x-1.5 disabled:opacity-50"
-            >
-              <span>Reject Case</span>
-            </button>
-          </div>
-        )}
+        <div className="flex items-center space-x-3">
+          <button
+            onClick={handleApprove}
+            disabled={isProcessing}
+            className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center space-x-1.5 shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Approve & Execute</span>
+          </button>
+          <button
+            onClick={handleReject}
+            disabled={isProcessing}
+            className="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center space-x-1.5 disabled:opacity-50 transition-all"
+          >
+            <span>Reject Case</span>
+          </button>
+          <button
+            onClick={handleStop}
+            disabled={isProcessing}
+            className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-[#1A1F36] border border-[#E6E8EC] font-bold text-xs flex items-center space-x-1 disabled:opacity-50 transition-all shadow-xs"
+          >
+            <span>Stop Case</span>
+          </button>
+        </div>
       </div>
 
       {actionMessage && (
