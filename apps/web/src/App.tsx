@@ -105,7 +105,7 @@ export function App() {
   const humanReviewCount = summary?.counts?.humanReviewCases || cases.filter((c) => c.status === 'HUMAN_REVIEW').length;
 
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
+    <div className="flex min-h-screen bg-[#F7F8FA] text-[#1A1F36] font-sans selection:bg-brand-100 selection:text-brand-600">
       {/* Sidebar Navigation */}
       <Sidebar
         currentScreen={currentScreen}

@@ -19,7 +19,7 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
       title: 'Scenario A: Automatic Recovery',
       description: 'Simulates transient bank degradation payment failure that AI recommends retrying. Policy approves and automatic retry succeeds.',
       badge: 'SUCCESS CASE',
-      badgeColor: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
       targetAmount: 750000
     },
     {
@@ -27,7 +27,7 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
       title: 'Scenario B: Policy Safe Stop',
       description: 'Simulates low-probability repeated failure where policy guardrails enforce a safe stop and prevent unsafe retry spam.',
       badge: 'POLICY GUARDRAIL',
-      badgeColor: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+      badgeColor: 'bg-rose-100 text-rose-800 border-rose-300',
       targetAmount: 200000
     },
     {
@@ -35,7 +35,7 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
       title: 'Scenario C: High-Value Human Escalation',
       description: 'Simulates high-value transaction (₹1,25,000) with ambiguous failure details that triggers mandatory human approval.',
       badge: 'HUMAN ESCALATION',
-      badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+      badgeColor: 'bg-amber-100 text-amber-800 border-amber-300',
       targetAmount: 12500000
     },
     {
@@ -43,7 +43,7 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
       title: 'Scenario D: AI Outage Fallback',
       description: 'Simulates LLM provider unavailability, demonstrating safe deterministic fallback and escalation without system failure.',
       badge: 'FALLBACK SAFETY',
-      badgeColor: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
+      badgeColor: 'bg-brand-100 text-brand-800 border-brand-300',
       targetAmount: 450000
     }
   ];
@@ -68,11 +68,11 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
     <div className="p-6 space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-bold text-slate-100 tracking-tight flex items-center space-x-2.5">
-          <PlaySquare className="w-6 h-6 text-cyan-400" />
+        <h2 className="text-2xl font-extrabold text-[#1A1F36] tracking-tight flex items-center space-x-2.5">
+          <PlaySquare className="w-6 h-6 text-brand-500" />
           <span>Interactive Recovery Demo Simulator</span>
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-[#697386] text-sm mt-1">
           Trigger live, end-to-end recovery scenarios to test risk scoring, AI recommendations, zero-trust policy guardrails, and state machine transitions.
         </p>
       </div>
@@ -84,29 +84,29 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
           return (
             <div
               key={sc.id}
-              className={`glass-card rounded-2xl p-6 border transition-all flex flex-col justify-between ${
+              className={`glass-card rounded-2xl p-6 border transition-all bg-white flex flex-col justify-between shadow-xs ${
                 isSelected
-                  ? 'border-cyan-500 shadow-lg shadow-cyan-500/20 bg-cyan-950/20'
-                  : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-brand-500 shadow-md bg-brand-50/20'
+                  : 'border-[#E6E8EC] hover:border-brand-300'
               }`}
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border font-mono ${sc.badgeColor}`}>
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border font-mono ${sc.badgeColor}`}>
                     {sc.badge}
                   </span>
-                  <span className="text-xs font-mono font-bold text-slate-300">{formatINR(sc.targetAmount)}</span>
+                  <span className="text-xs font-mono font-bold text-[#1A1F36]">{formatINR(sc.targetAmount)}</span>
                 </div>
-                <h3 className="font-bold text-slate-100 text-base">{sc.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{sc.description}</p>
+                <h3 className="font-extrabold text-[#1A1F36] text-base">{sc.title}</h3>
+                <p className="text-xs text-[#697386] leading-relaxed">{sc.description}</p>
               </div>
 
-              <div className="pt-5 mt-4 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-500 font-mono">Scenario: {sc.id}</span>
+              <div className="pt-5 mt-4 border-t border-[#E6E8EC] flex items-center justify-between">
+                <span className="text-[11px] text-[#8792A2] font-mono font-semibold">Scenario: {sc.id}</span>
                 <button
                   onClick={() => handleRunSimulation(sc.id)}
                   disabled={isRunning}
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center space-x-1.5 disabled:opacity-50 transition-all"
+                  className="px-4 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs shadow-md shadow-brand-500/20 flex items-center space-x-1.5 disabled:opacity-50 transition-all"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>{isRunning && isSelected ? 'Simulating...' : 'Run Simulation'}</span>
@@ -119,16 +119,16 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
 
       {/* Live Simulation Trace Terminal */}
       {simulationResult && (
-        <div className="glass-card rounded-2xl p-6 border border-slate-800 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div className="glass-card rounded-2xl p-6 border border-[#E6E8EC] bg-white space-y-4 shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#E6E8EC] pb-4">
             <div className="flex items-center space-x-2">
-              <Terminal className="w-5 h-5 text-cyan-400" />
-              <h3 className="font-bold text-slate-100 text-base">Live Simulation Step Execution Trace</h3>
+              <Terminal className="w-5 h-5 text-brand-500" />
+              <h3 className="font-extrabold text-[#1A1F36] text-base">Live Simulation Step Execution Trace</h3>
             </div>
             {simulationResult.caseId && (
               <button
                 onClick={() => onSelectCase(simulationResult.caseId)}
-                className="text-xs text-cyan-400 font-semibold flex items-center space-x-1 hover:underline"
+                className="text-xs text-brand-600 font-bold flex items-center space-x-1 hover:underline"
               >
                 <span>View Generated Case {simulationResult.caseId}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -137,19 +137,19 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
           </div>
 
           {simulationResult.error ? (
-            <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs">
+            <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
               Simulation Error: {simulationResult.error}
             </div>
           ) : (
             <div className="space-y-4 font-mono text-xs">
-              <div className="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-800 font-sans">
+              <div className="flex items-center justify-between bg-[#F9FAFB] p-3 rounded-xl border border-[#E6E8EC] font-sans">
                 <div>
-                  <span className="text-slate-400 text-xs">Final Case State:</span>{' '}
-                  <strong className="text-cyan-400 font-bold ml-1">{simulationResult.finalStatus}</strong>
+                  <span className="text-[#697386] text-xs font-bold">Final Case State:</span>{' '}
+                  <strong className="text-brand-600 font-extrabold ml-1">{simulationResult.finalStatus}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 text-xs">Recovered Amount:</span>{' '}
-                  <strong className="text-emerald-400 font-bold ml-1">{formatINR(simulationResult.recoveredAmount)}</strong>
+                  <span className="text-[#697386] text-xs font-bold">Recovered Amount:</span>{' '}
+                  <strong className="text-emerald-700 font-extrabold ml-1">{formatINR(simulationResult.recoveredAmount)}</strong>
                 </div>
               </div>
 
@@ -160,23 +160,23 @@ export const DemoSimulatorScreen: React.FC<DemoSimulatorScreenProps> = ({ onRefr
                     key={idx}
                     className={`p-3.5 rounded-xl border flex items-start space-x-3 ${
                       st.status === 'SUCCESS'
-                        ? 'bg-slate-900/80 border-emerald-500/30 text-slate-200'
+                        ? 'bg-emerald-50/30 border-emerald-200 text-[#1A1F36]'
                         : st.status === 'WARNING'
-                        ? 'bg-amber-950/20 border-amber-500/30 text-amber-200'
+                        ? 'bg-amber-50/40 border-amber-200 text-amber-900'
                         : st.status === 'FAILED'
-                        ? 'bg-rose-950/20 border-rose-500/30 text-rose-200'
-                        : 'bg-slate-900/80 border-slate-800 text-slate-300'
+                        ? 'bg-rose-50/40 border-rose-200 text-rose-900'
+                        : 'bg-[#F9FAFB] border-[#E6E8EC] text-[#1A1F36]'
                     }`}
                   >
-                    <div className="w-6 h-6 rounded-full bg-slate-800 flex items-center justify-center text-[11px] font-bold text-cyan-400 flex-shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-brand-50 flex items-center justify-center text-[11px] font-extrabold text-brand-600 border border-brand-200 flex-shrink-0">
                       {st.step}
                     </div>
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center justify-between font-sans">
-                        <strong className="font-bold text-slate-100">{st.name}</strong>
-                        <span className="text-[10px] text-slate-500">{new Date(st.timestamp).toLocaleTimeString()}</span>
+                        <strong className="font-extrabold text-[#1A1F36]">{st.name}</strong>
+                        <span className="text-[10px] text-[#8792A2] font-semibold">{new Date(st.timestamp).toLocaleTimeString()}</span>
                       </div>
-                      <p className="text-slate-300 text-xs font-sans">{st.detail}</p>
+                      <p className="text-[#697386] text-xs font-sans font-medium">{st.detail}</p>
                     </div>
                   </div>
                 ))}

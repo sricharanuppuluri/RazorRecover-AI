@@ -9,17 +9,28 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0f7ff',
-          100: '#e0effe',
-          500: '#0284c7',
-          600: '#026597',
-          700: '#0369a1',
-          900: '#0c4a6e',
+          50: '#F4F3FF',
+          100: '#EBE9FE',
+          200: '#DDD6FE',
+          300: '#C4B5FD',
+          400: '#A78BFA',
+          500: '#6C63FF', // Primary Razorpay-inspired Purple
+          600: '#5146D8', // Active/Hover Purple
+          700: '#3B32B2',
+          800: '#2A248A',
+          900: '#1B1762',
         },
         razor: {
-          blue: '#0c2340',
-          cyan: '#00d2ff',
-          accent: '#3b82f6',
+          dark: '#1A1F36',
+          bg: '#F7F8FA',
+          surface: '#FFFFFF',
+          subtle: '#F9FAFB',
+          border: '#E6E8EC',
+          purple: '#6C63FF',
+          purpleDark: '#5146D8',
+          purpleLight: '#F4F3FF',
+          secondary: '#697386',
+          muted: '#8792A2',
         }
       },
       fontFamily: {
