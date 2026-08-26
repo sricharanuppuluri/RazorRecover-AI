@@ -90,10 +90,22 @@ export function App() {
 
   const handleSelectCase = async (caseId: string) => {
     setSelectedCaseId(caseId);
+    const existing = cases.find((c) => c.id === caseId);
+    if (existing) {
+      setCaseDetail({
+        ...existing,
+        id: caseId,
+        amount_at_risk: existing.amount_at_risk || 750000,
+        status: existing.status || 'HUMAN_REVIEW',
+        diagnosis: existing.diagnosis || 'TEMPORARY_BANK_DEGRADATION',
+        order_id: existing.order_id || 'ord_demo_112',
+        started_at: existing.started_at || new Date().toISOString()
+      });
+    }
     setCurrentScreen('case-detail');
     try {
       const detailRes = await api.getRecoveryCaseDetail(caseId);
-      setCaseDetail(detailRes);
+      if (detailRes) setCaseDetail(detailRes);
     } catch (err) {
       console.error('Failed to load case detail:', err);
     }
