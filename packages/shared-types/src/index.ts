@@ -186,3 +186,25 @@ export interface WebhookEvent {
   retry_count: number;
   error_message?: string;
 }
+
+export interface CreateRazorpayOrderInput {
+  amount: number; // in smallest currency units (paise)
+  currency?: Currency;
+  receipt?: string;
+  notes?: Record<string, string>;
+}
+
+export interface RazorpayOrderResponse {
+  id: string;
+  entity: 'order';
+  amount: number;
+  amount_paid: number;
+  amount_due: number;
+  currency: string;
+  receipt?: string;
+  status: 'created' | 'attempted' | 'paid';
+  attempts: number;
+  notes?: Record<string, string>;
+  created_at: number;
+}
+

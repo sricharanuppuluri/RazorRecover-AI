@@ -49,19 +49,21 @@ export function validateCustomerInput(req: Request, res: Response, next: NextFun
 }
 
 export function validateOrderInput(req: Request, res: Response, next: NextFunction) {
-  const { id, merchant_id, customer_id, amount, status, currency } = req.body;
+  const body = req.body || {};
+  const merchant_id = body.merchant_id || body.merchantId;
+  const customer_id = body.customer_id || body.customerId;
+  const amount = body.amount;
+  const currency = body.currency;
+  const status = body.status;
 
-  if (!id || typeof id !== 'string') {
-    return res.status(400).json({ status: 'error', error: { message: 'Missing or invalid order id', code: 'INVALID_INPUT' } });
-  }
-  if (!merchant_id || typeof merchant_id !== 'string') {
+  if (!merchant_id || typeof merchant_id !== 'string' || merchant_id.trim() === '') {
     return res.status(400).json({ status: 'error', error: { message: 'Missing or invalid merchant_id', code: 'INVALID_INPUT' } });
   }
-  if (!customer_id || typeof customer_id !== 'string') {
+  if (!customer_id || typeof customer_id !== 'string' || customer_id.trim() === '') {
     return res.status(400).json({ status: 'error', error: { message: 'Missing or invalid customer_id', code: 'INVALID_INPUT' } });
   }
-  if (typeof amount !== 'number' || amount < 0 || !Number.isInteger(amount)) {
-    return res.status(400).json({ status: 'error', error: { message: 'amount must be a non-negative integer in smallest currency units (paise)', code: 'INVALID_INPUT' } });
+  if (typeof amount !== 'number' || amount <= 0 || !Number.isInteger(amount)) {
+    return res.status(400).json({ status: 'error', error: { message: 'amount must be a positive integer in smallest currency units (paise)', code: 'INVALID_INPUT' } });
   }
   if (currency && !VALID_CURRENCIES.includes(currency)) {
     return res.status(400).json({ status: 'error', error: { message: `Invalid currency. Allowed: ${VALID_CURRENCIES.join(', ')}`, code: 'INVALID_INPUT' } });
@@ -70,8 +72,14 @@ export function validateOrderInput(req: Request, res: Response, next: NextFuncti
     return res.status(400).json({ status: 'error', error: { message: `Invalid order status. Allowed: ${VALID_ORDER_STATUSES.join(', ')}`, code: 'INVALID_INPUT' } });
   }
 
+  // Normalize body properties for downstream handling
+  req.body.merchant_id = merchant_id;
+  req.body.customer_id = customer_id;
+  req.body.currency = currency || 'INR';
+
   next();
 }
+
 
 export function validatePaymentInput(req: Request, res: Response, next: NextFunction) {
   const { id, merchant_id, customer_id, amount, status, currency } = req.body;

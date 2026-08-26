@@ -2,6 +2,7 @@ import React from 'react';
 import { Navbar } from './components/Navbar';
 import { HealthBadge } from './components/HealthBadge';
 import { PhaseBanner } from './components/PhaseBanner';
+import { CheckoutDemo } from './components/CheckoutDemo';
 import { Shield, Sparkles, AlertCircle, ArrowRight, Lock, Database, FileCode, CheckCircle2 } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -51,7 +52,12 @@ export const App: React.FC = () => {
           </div>
         </section>
 
-        {/* Phase 0 Status & Health Grid */}
+        {/* Phase 2 Razorpay Test Mode Checkout Demo */}
+        <section>
+          <CheckoutDemo />
+        </section>
+
+        {/* Phase Status & Health Grid */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <HealthBadge />
 
@@ -62,7 +68,7 @@ export const App: React.FC = () => {
                   <FileCode className="w-5 h-5 text-cyan-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-slate-100 text-base">Phase 0 Foundation Scope</h3>
+                  <h3 className="font-semibold text-slate-100 text-base">Phase 2 Scope Complete</h3>
                   <p className="text-xs text-slate-400">Current Phase Checklist</p>
                 </div>
               </div>
@@ -70,31 +76,31 @@ export const App: React.FC = () => {
               <ul className="space-y-2.5 text-xs text-slate-300">
                 <li className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span>Monorepo structure (`apps/`, `packages/`, `services/`, `data/`, `tests/`, `docs/`)</span>
+                  <span>Razorpay Test Mode Order Creation (<code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">POST /api/orders</code>)</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span>Express API server with TypeScript & request logging</span>
+                  <span>Internal Order persistence with <code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">razorpay_order_id</code></span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span>Verified <code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">GET /health</code> endpoint</span>
+                  <span>Integer smallest currency units (paise) money safety enforcement</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span>PostgreSQL configuration for <code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">DATABASE_URL</code></span>
+                  <span>Official Razorpay Checkout Modal integration</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <CheckCircle2 className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span>Environment variables safety (<code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">.env.example</code> & gitignored secrets)</span>
+                  <span>Server-side Secret Key safety (<code className="bg-slate-900 px-1 py-0.5 rounded text-cyan-300 font-mono">RAZORPAY_KEY_SECRET</code> unexposed)</span>
                 </li>
               </ul>
             </div>
 
             <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Ready for Phase 1 Migration</span>
+              <span>Ready for Phase 3 Webhooks & Verification</span>
               <span className="flex items-center text-cyan-400 font-medium">
-                Phase 0 Verified <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                Phase 2 Verified <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </span>
             </div>
           </div>
@@ -110,9 +116,9 @@ export const App: React.FC = () => {
               <AlertCircle className="w-5 h-5" />
             </div>
             <div className="space-y-2">
-              <h4 className="font-semibold text-slate-200 text-sm">Phase 0 Boundaries Notice</h4>
+              <h4 className="font-semibold text-slate-200 text-sm">Phase 2 Boundaries Notice</h4>
               <p className="text-xs text-slate-400 leading-relaxed">
-                In strict accordance with the project specification rules, Phase 0 includes <strong>only</strong> the project foundation, clean repository structure, React frontend shell, Express backend API, database configuration, safety setup, and documentation. Future components (Razorpay webhooks, AI agent, recovery engine, policy guardrails, synthetic dataset, and dashboard features) will be implemented in subsequent phases.
+                Creating a Razorpay order or completing a checkout modal in the browser is <strong>not</strong> payment success. Razorpay secret credentials remain 100% server-side. Trusted payment state, webhook signature verification, and revenue recovery processing are strictly part of <strong>Phase 3</strong>.
               </p>
             </div>
           </div>

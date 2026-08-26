@@ -1,13 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import { OrderService } from '../services/order.service';
+import { RazorpayServiceError } from '../services/razorpay/client';
 
 const orderService = new OrderService();
 
 export async function createOrderController(req: Request, res: Response, next: NextFunction) {
   try {
-    const order = await orderService.createOrder(req.body);
-    res.status(201).json({ status: 'success', data: order });
-  } catch (err) {
+    const result = await orderService.createOrder(req.body);
+    res.status(201).json({ status: 'success', data: result });
+  } catch (err: any) {
+    if (err instanceof RazorpayServiceError) {
+      return res.status(err.statusCode).json({
+        status: 'error',
+        error: {
+          message: err.message,
+          code: 'RAZORPAY_API_ERROR',
+          details: err.details
+        }
+      });
+    }
     next(err);
   }
 }
