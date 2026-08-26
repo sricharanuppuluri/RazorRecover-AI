@@ -1,0 +1,537 @@
+/**
+ * RazorRecover AI - Shared Core Types
+ * Single source of truth interfaces aligned with Project Specification
+ */
+export interface HealthResponse {
+    status: 'ok' | 'error';
+    service: string;
+    timestamp: string;
+    version: string;
+    environment: string;
+    database: 'connected' | 'disconnected' | 'unconfigured';
+}
+export type UserRole = 'OWNER' | 'ADMIN' | 'OPERATOR' | 'VIEWER';
+export type Currency = 'INR' | 'USD' | 'EUR';
+export interface Merchant {
+    id: string;
+    name: string;
+    currency: Currency;
+    test_mode: boolean;
+    policy_profile_id: string;
+    high_value_threshold?: number;
+    created_at: string;
+    updated_at: string;
+}
+export interface Customer {
+    id: string;
+    merchant_id: string;
+    external_customer_id: string;
+    email_hash?: string;
+    phone_hash?: string;
+    first_seen_at: string;
+    successful_payment_count: number;
+    failed_payment_count: number;
+    total_success_value: number;
+    total_failed_value: number;
+    last_success_at?: string;
+    last_failure_at?: string;
+    contact_opt_in: boolean;
+    risk_flags: string[];
+}
+export type OrderStatus = 'CREATED' | 'ATTEMPTED' | 'PAID' | 'ABANDONED' | 'EXPIRED';
+export interface Order {
+    id: string;
+    merchant_id: string;
+    razorpay_order_id: string;
+    customer_id: string;
+    amount: number;
+    currency: Currency;
+    status: OrderStatus;
+    product_category?: string;
+    created_at: string;
+    checkout_started_at?: string;
+    checkout_abandoned_at?: string;
+    paid_at?: string;
+}
+export type PaymentStatus = 'CREATED' | 'AUTHORIZED' | 'CAPTURED' | 'FAILED' | 'REFUNDED';
+export interface Payment {
+    id: string;
+    merchant_id: string;
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    customer_id: string;
+    amount: number;
+    currency: Currency;
+    method?: string;
+    bank?: string;
+    status: PaymentStatus;
+    error_code?: string;
+    error_description?: string;
+    error_source?: string;
+    error_step?: string;
+    error_reason?: string;
+    created_at: string;
+    authorized_at?: string;
+    captured_at?: string;
+    failure_count: number;
+    recovery_case_id?: string;
+}
+export type CaseStatus = 'NEW' | 'DETECTED' | 'DIAGNOSING' | 'SCORED' | 'AI_RECOMMENDED' | 'POLICY_CHECK' | 'HUMAN_REVIEW' | 'ACTION_PENDING' | 'ACTION_SENT' | 'WAITING_FOR_OUTCOME' | 'RECOVERED' | 'FAILED' | 'STOPPED';
+export type AllowedAction = 'RETRY' | 'NOTIFY' | 'ESCALATE' | 'NO_ACTION' | 'WAIT_AND_RETRY' | 'OFFER_ALTERNATE_PAYMENT' | 'SEND_RECOVERY_LINK' | 'SEND_REMINDER' | 'ESCALATE_HUMAN' | 'STOP';
+export interface PolicyProfile {
+    id: string;
+    merchant_id: string;
+    max_retry_attempts: number;
+    max_notifications: number;
+    high_value_threshold: number;
+    min_recovery_probability: number;
+    min_ai_confidence: number;
+    recovery_window_hours: number;
+    created_at: string;
+    updated_at: string;
+}
+export interface RecoveryCase {
+    id: string;
+    merchant_id: string;
+    order_id: string;
+    payment_id?: string;
+    case_type: 'PAYMENT_FAILURE' | 'CHECKOUT_ABANDONMENT' | 'SUBSCRIPTION_FAILURE' | 'DEGRADATION';
+    amount_at_risk: number;
+    recoverability_score?: number;
+    expected_recovery_value?: number;
+    diagnosis?: string;
+    diagnosis_confidence?: number;
+    priority_score?: number;
+    recommended_action?: AllowedAction;
+    action_confidence?: number;
+    policy_decision?: 'APPROVED' | 'DENIED' | 'HUMAN_REQUIRED';
+    status: CaseStatus;
+    retry_count: number;
+    notification_count: number;
+    started_at: string;
+    expires_at: string;
+    recovered_amount?: number;
+    closed_at?: string;
+    close_reason?: string;
+}
+export interface AIDecision {
+    id: string;
+    recovery_case_id: string;
+    model: string;
+    prompt_version: string;
+    input_context_hash: string;
+    diagnosis: string;
+    recovery_probability: number;
+    recommended_action: AllowedAction;
+    rationale: string;
+    confidence: number;
+    created_at: string;
+}
+export interface PolicyDecision {
+    id: string;
+    recovery_case_id: string;
+    action: AllowedAction;
+    allowed: boolean;
+    reasons: string[];
+    violated_rules: string[];
+    requires_human: boolean;
+    policy_version: string;
+    created_at: string;
+}
+export type RecoveryActionStatus = 'PENDING' | 'RUNNING' | 'SUCCEEDED' | 'FAILED' | 'CANCELLED';
+export interface RecoveryAction {
+    id: string;
+    recovery_case_id: string;
+    merchant_id: string;
+    action_type: AllowedAction;
+    status: RecoveryActionStatus;
+    correlation_id: string;
+    idempotency_key: string;
+    attempt_number: number;
+    requested_at: string;
+    started_at?: string;
+    completed_at?: string;
+    expires_at?: string;
+    result_summary?: string;
+    error_code?: string;
+    error_message?: string;
+    simulation?: boolean;
+}
+export interface RecoveryLink {
+    id: string;
+    recovery_case_id: string;
+    merchant_id: string;
+    order_id: string;
+    token_hash: string;
+    token_raw?: string;
+    expires_at: string;
+    used_at?: string;
+    created_at: string;
+}
+export type ActorType = 'system' | 'ai' | 'merchant' | 'customer';
+export interface AuditEvent {
+    id: string;
+    merchant_id: string;
+    recovery_case_id: string;
+    event_type: string;
+    actor_type: ActorType;
+    actor_id?: string;
+    action: string;
+    input_summary?: string;
+    decision_summary?: string;
+    policy_result?: string;
+    outcome?: string;
+    timestamp: string;
+    correlation_id: string;
+}
+export interface WebhookEvent {
+    id: string;
+    razorpay_event_id: string;
+    event_type: string;
+    signature_valid: boolean;
+    raw_body_hash: string;
+    received_at: string;
+    processed_at?: string;
+    processing_status: 'RECEIVED' | 'PROCESSED' | 'FAILED' | 'DUPLICATE' | 'IGNORED';
+    retry_count: number;
+    error_message?: string;
+}
+export interface CreateRazorpayOrderInput {
+    amount: number;
+    currency?: Currency;
+    receipt?: string;
+    notes?: Record<string, string>;
+}
+export interface RazorpayOrderResponse {
+    id: string;
+    entity: 'order';
+    amount: number;
+    amount_paid: number;
+    amount_due: number;
+    currency: string;
+    receipt?: string;
+    status: 'created' | 'attempted' | 'paid';
+    attempts: number;
+    notes?: Record<string, string>;
+    created_at: number;
+}
+export type FailureCategory = 'TEMPORARY_BANK_DEGRADATION' | 'CUSTOMER_AUTHENTICATION_ISSUE' | 'INSUFFICIENT_FUNDS' | 'REPEATED_FAILURE' | 'CHECKOUT_ABANDONMENT' | 'HIGH_VALUE_TRANSACTION' | 'UNKNOWN_OR_AMBIGUOUS' | 'ALREADY_CAPTURED';
+export type ReasonCode = 'ALREADY_CAPTURED' | 'REPEATED_FAILURES' | 'AUTHENTICATION_FAILURE' | 'INSUFFICIENT_FUNDS_SIGNAL' | 'RECENT_BANK_FAILURE_SPIKE' | 'RECENT_METHOD_FAILURE_SPIKE' | 'HIGH_VALUE_TRANSACTION' | 'CHECKOUT_TIMEOUT' | 'INSUFFICIENT_EVIDENCE';
+export interface DiagnosisResult {
+    category: FailureCategory;
+    explanation: string;
+    confidence: number;
+    reasonCodes: ReasonCode[];
+}
+export interface RecoveryAnalysisResult {
+    paymentId?: string;
+    orderId?: string;
+    merchantId: string;
+    amountAtRisk: number;
+    diagnosis: DiagnosisResult;
+    recoveryProbability: number;
+    expectedRecoveryValue: number;
+    priorityScore: number;
+    highValue: boolean;
+    recoveryCaseId?: string;
+    eligibleForRecovery: boolean;
+}
+export interface AIInputContext {
+    merchant: {
+        id: string;
+        currency: Currency;
+        policyProfileId: string;
+        highValueThreshold: number;
+    };
+    customer: {
+        successfulPaymentCount: number;
+        failedPaymentCount: number;
+        contactOptIn: boolean;
+        totalSuccessValue: number;
+    };
+    order: {
+        id: string;
+        amount: number;
+        currency: Currency;
+        status: OrderStatus;
+        productCategory?: string;
+        createdAt: string;
+    };
+    payment?: {
+        id: string;
+        method?: string;
+        bank?: string;
+        status: PaymentStatus;
+        errorCode?: string;
+        errorDescription?: string;
+        errorSource?: string;
+        errorStep?: string;
+        errorReason?: string;
+        failureCount: number;
+    };
+    analysis: RecoveryAnalysisResult;
+}
+export interface AIDecisionOutput {
+    diagnosis: string;
+    recoveryProbability: number;
+    recommendedAction: AllowedAction;
+    rationale: string;
+    confidence: number;
+}
+export interface PolicyEvaluationResult {
+    action: AllowedAction;
+    allowed: boolean;
+    reasons: string[];
+    violatedRules: string[];
+    requiresHuman: boolean;
+    policyVersion: string;
+}
+export interface AIDecisionPipelineResult {
+    recoveryCaseId: string;
+    deterministicAnalysis: RecoveryAnalysisResult;
+    aiDecision: AIDecisionOutput & {
+        id: string;
+        model: string;
+        promptVersion: string;
+        inputContextHash: string;
+        createdAt: string;
+    };
+    policyDecision: PolicyEvaluationResult & {
+        id: string;
+        createdAt: string;
+    };
+}
+export interface DegradationAlert {
+    id: string;
+    merchantId: string;
+    method?: string;
+    bank?: string;
+    failureCount: number;
+    failureRate: number;
+    totalAttempts: number;
+    windowMinutes: number;
+    detectedAt: string;
+    suggestedAction: AllowedAction;
+}
+export type PromiseStatus = 'PENDING' | 'KEPT' | 'BROKEN' | 'CANCELLED';
+export interface PromiseToPay {
+    id: string;
+    merchantId: string;
+    recoveryCaseId: string;
+    customerId: string;
+    promisedAmount: number;
+    promisedDate: string;
+    status: PromiseStatus;
+    notes?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface LocalizedNotificationMessage {
+    language: 'en' | 'hinglish';
+    headline: string;
+    body: string;
+    actionUrl?: string;
+}
+export type CheckoutSessionStatus = 'STARTED' | 'PAYMENT_ATTEMPTED' | 'ABANDONED' | 'RECOVERED' | 'EXPIRED';
+export interface CheckoutSession {
+    id: string;
+    merchantId: string;
+    orderId: string;
+    customerId: string;
+    amount: number;
+    currency: string;
+    status: CheckoutSessionStatus;
+    startedAt: string;
+    lastAttemptAt?: string;
+    abandonedAt?: string;
+    recoveryCaseId?: string;
+}
+export type SubscriptionStatus = 'ACTIVE' | 'PAST_DUE' | 'FAILED' | 'RECOVERED' | 'CANCELLED';
+export interface SubscriptionFailure {
+    id: string;
+    merchantId: string;
+    subscriptionId: string;
+    customerId: string;
+    amount: number;
+    planName: string;
+    failureReason: string;
+    retryCount: number;
+    status: SubscriptionStatus;
+    lastAttemptAt: string;
+    nextRetryAt?: string;
+    recoveryCaseId?: string;
+}
+export interface ExperimentVariant {
+    id: string;
+    name: string;
+    strategy: 'AI_AGENT' | 'RULE_BASED' | 'CONTROL_NO_RECOVERY';
+    weight: number;
+}
+export interface RecoveryExperiment {
+    id: string;
+    merchantId: string;
+    name: string;
+    status: 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
+    variants: ExperimentVariant[];
+    createdAt: string;
+    updatedAt: string;
+}
+export interface ExperimentAnalytics {
+    experimentId: string;
+    merchantId: string;
+    totalCases: number;
+    variantMetrics: Record<string, {
+        cases: number;
+        recoveredCases: number;
+        recoveredAmount: number;
+        recoveryRate: number;
+        recoveryYield: number;
+    }>;
+}
+export interface CalibrationMetrics {
+    merchantId: string;
+    totalEvaluatedCases: number;
+    expectedCalibrationError: number;
+    brierScore: number;
+    diagnosisAccuracy: number;
+    binnedCalibration: Array<{
+        binMin: number;
+        binMax: number;
+        predictedProb: number;
+        actualRecoveryRate: number;
+        count: number;
+    }>;
+}
+export interface ModelDriftAlert {
+    id: string;
+    merchantId: string;
+    metric: 'DIAGNOSIS_ACCURACY' | 'RECOVERY_YIELD' | 'CALIBRATION_ERROR';
+    threshold: number;
+    actualValue: number;
+    severity: 'LOW' | 'MEDIUM' | 'HIGH';
+    detectedAt: string;
+    recommendation: string;
+}
+export type VoiceCallStatus = 'INITIATED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'OPTED_OUT';
+export type VoiceIntentType = 'REQUEST_PAYMENT_LINK' | 'CONFIRM_RETRY' | 'CHECK_STATUS' | 'OPTOUT' | 'ESCALATE_HUMAN' | 'UNKNOWN';
+export type VoiceLanguage = 'ENGLISH' | 'HINGLISH' | 'HINDI';
+export interface VoiceUtterance {
+    speaker: 'ASSISTANT' | 'CUSTOMER';
+    text: string;
+    timestamp: string;
+}
+export interface VoiceSession {
+    id: string;
+    merchantId: string;
+    recoveryCaseId: string;
+    phoneNumber: string;
+    language: VoiceLanguage;
+    status: VoiceCallStatus;
+    lastUtterance?: string;
+    detectedIntent?: VoiceIntentType;
+    transcript: VoiceUtterance[];
+    executedAction?: string;
+    actionResult?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface VoiceCallRequest {
+    recoveryCaseId: string;
+    language?: VoiceLanguage;
+}
+export interface VoiceInteractionRequest {
+    sessionId: string;
+    userUtterance: string;
+}
+export interface VoiceProviderResponse {
+    sessionId: string;
+    recognizedText: string;
+    detectedIntent: VoiceIntentType;
+    confidence: number;
+    spokenResponse: string;
+    suggestedAction?: string;
+}
+export type NotificationChannel = 'WHATSAPP' | 'SMS' | 'EMAIL' | 'WEBHOOK';
+export type NotificationDeliveryStatus = 'PENDING' | 'SENT' | 'DELIVERED' | 'FAILED' | 'OPTED_OUT';
+export interface NotificationDispatch {
+    id: string;
+    merchantId: string;
+    recoveryCaseId: string;
+    customerId: string;
+    channel: NotificationChannel;
+    recipient: string;
+    templateName: string;
+    language: 'ENGLISH' | 'HINDI' | 'HINGLISH';
+    status: NotificationDeliveryStatus;
+    sentAt?: string;
+    deliveredAt?: string;
+    errorMessage?: string;
+    metadata?: Record<string, any>;
+}
+export interface CausalMetrics {
+    merchantId: string;
+    totalTreatmentCases: number;
+    totalControlCases: number;
+    treatmentRecoveredAmount: number;
+    controlRecoveredAmount: number;
+    treatmentConversionRate: number;
+    controlConversionRate: number;
+    incrementalRevenueRecovered: number;
+    averageTreatmentEffect: number;
+    causalAttributableYield: number;
+    confidenceInterval95: [number, number];
+    calculatedAt: string;
+}
+export interface ScheduledReport {
+    id: string;
+    merchantId: string;
+    title: string;
+    cadence: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+    recipients: string[];
+    format: 'JSON' | 'CSV' | 'PDF';
+    status: 'ACTIVE' | 'PAUSED';
+    lastGeneratedAt?: string;
+    nextScheduledAt: string;
+    createdAt: string;
+}
+export interface AuditVaultProof {
+    merchantId: string;
+    totalEventsCount: number;
+    genesisHash: string;
+    rootMerkleHash: string;
+    isChainIntact: boolean;
+    verifiedAt: string;
+}
+export interface ComplianceReport {
+    merchantId: string;
+    soc2Compliant: boolean;
+    gdprCompliant: boolean;
+    piiHashedCount: number;
+    contactOptInCheckPass: boolean;
+    unauthorizedActionsCount: number;
+    policyViolationsCount: number;
+    generatedAt: string;
+}
+export type ScenarioType = 'BANK_DEGRADATION' | 'AUTH_FAILURE' | 'ABANDONED_CHECKOUT' | 'SUBSCRIPTION_RECURRING' | 'VOICE_RECOVERY';
+export interface SimulationScenario {
+    id: ScenarioType;
+    title: string;
+    description: string;
+    defaultAmount: number;
+    expectedDiagnosis: string;
+    expectedAction: string;
+}
+export interface SimulationScenarioResult {
+    scenarioId: ScenarioType;
+    merchantId: string;
+    orderId: string;
+    paymentId: string;
+    recoveryCaseId: string;
+    diagnosis: string;
+    aiRecommendation: string;
+    policyDecision: string;
+    actionExecuted: string;
+    caseStatus: string;
+    executedAt: string;
+}
+//# sourceMappingURL=index.d.ts.map

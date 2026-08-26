@@ -4,7 +4,14 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "module": "CommonJS",
-    "moduleResolution": "Node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@razorrecover/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
+      "@razorrecover/policy-engine": ["../../packages/policy-engine/dist/index.d.ts"],
+      "@razorrecover/recovery-engine": ["../../packages/recovery-engine/dist/index.d.ts"],
+      "@razorrecover/evaluation": ["../../packages/evaluation/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*"]
 }
