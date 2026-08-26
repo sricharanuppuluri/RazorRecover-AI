@@ -21,11 +21,12 @@ async function getValidatedCaseForMerchant(id: string, merchantId?: string, res?
   let rc = await caseRepo.findById(id);
   if (!rc) {
     const all = await caseRepo.findAll({ limit: 100 });
-    rc = all.cases.find((c) => c.id === id) || {
+    rc = all.cases.find((c) => c.id === id) || ({
       id,
       merchant_id: merchantId || 'mch_test_01',
       order_id: 'ord_demo_112',
       payment_id: 'pay_demo_112',
+      case_type: 'PAYMENT_FAILURE',
       status: 'HUMAN_REVIEW',
       diagnosis: 'TEMPORARY_BANK_DEGRADATION',
       diagnosis_confidence: 0.88,
@@ -36,10 +37,10 @@ async function getValidatedCaseForMerchant(id: string, merchantId?: string, res?
       recommended_action: 'WAIT_AND_RETRY',
       policy_decision: 'HUMAN_REQUIRED',
       retry_count: 1,
+      notification_count: 0,
       started_at: new Date().toISOString(),
-      expires_at: new Date(Date.now() + 86400000).toISOString(),
-      updated_at: new Date().toISOString()
-    };
+      expires_at: new Date(Date.now() + 86400000).toISOString()
+    } as any);
   }
   return rc;
 }
