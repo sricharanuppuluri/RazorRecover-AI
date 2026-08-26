@@ -2,15 +2,26 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
     "module": "CommonJS",
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@razorrecover/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
-      "@razorrecover/policy-engine": ["../../packages/policy-engine/dist/index.d.ts"],
-      "@razorrecover/recovery-engine": ["../../packages/recovery-engine/dist/index.d.ts"],
-      "@razorrecover/evaluation": ["../../packages/evaluation/dist/index.d.ts"]
+      "@razorrecover/shared-types": [
+        "../../packages/shared-types/src/index.ts",
+        "../../packages/shared-types/dist/index.d.ts"
+      ],
+      "@razorrecover/policy-engine": [
+        "../../packages/policy-engine/src/index.ts",
+        "../../packages/policy-engine/dist/index.d.ts"
+      ],
+      "@razorrecover/recovery-engine": [
+        "../../packages/recovery-engine/src/index.ts",
+        "../../packages/recovery-engine/dist/index.d.ts"
+      ],
+      "@razorrecover/evaluation": [
+        "../../packages/evaluation/src/index.ts",
+        "../../packages/evaluation/dist/index.d.ts"
+      ]
     }
   },
   "include": ["src/**/*"]
