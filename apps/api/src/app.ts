@@ -28,7 +28,7 @@ export function createApp(): Express {
 
   // CORS
   app.use(cors({
-    origin: [env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: true,
     credentials: true,
   }));
 
@@ -39,7 +39,15 @@ export function createApp(): Express {
     }
   }));
   app.use(express.urlencoded({ extended: true }));
-  app.use(requestLogger);
+  // Ensure demo data is seeded before processing API routes
+  app.use(async (_req, _res, next) => {
+    try {
+      await DemoDataService.seedAll();
+    } catch (err: any) {
+      console.warn('[DemoDataService] Middleware seed error:', err?.message);
+    }
+    next();
+  });
 
   // Health and Readiness endpoints at root GET /health & GET /ready
   app.use('/health', healthRoutes);
