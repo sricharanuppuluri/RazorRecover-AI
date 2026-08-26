@@ -18,7 +18,8 @@ export async function runSimulationController(req: Request, res: Response, next:
       });
     }
 
-    const result = await simulationService.runSimulation(scenario as ScenarioType);
+    const merchantId = req.user?.merchantId || 'mch_test_01';
+    const result = await simulationService.runSimulation(scenario as ScenarioType, merchantId);
     res.status(200).json({ status: 'success', data: result });
   } catch (err) {
     next(err);

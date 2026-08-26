@@ -3,8 +3,8 @@ import { RecoveryCaseRepository } from '../repositories/recovery-case.repository
 export class DashboardService {
   private caseRepo = new RecoveryCaseRepository();
 
-  public async getSummary() {
-    const { cases } = await this.caseRepo.findAll({ limit: 1000 });
+  public async getSummary(merchantId?: string) {
+    const { cases } = await this.caseRepo.findAll({ merchantId, limit: 1000 });
 
     let revenueAtRisk = 0;
     let potentiallyRecoverable = 0;

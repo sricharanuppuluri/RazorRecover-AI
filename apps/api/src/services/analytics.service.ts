@@ -13,12 +13,13 @@ export class AnalyticsService {
   private caseRepo = new RecoveryCaseRepository();
 
   public async getRevenueLeaks(filters?: {
+    merchantId?: string;
     dateRange?: string;
     category?: string;
     paymentMethod?: string;
     bankProvider?: string;
   }) {
-    const { cases } = await this.caseRepo.findAll({ limit: 1000 });
+    const { cases } = await this.caseRepo.findAll({ merchantId: filters?.merchantId, limit: 1000 });
 
     const categories: FailureCategory[] = [
       'TEMPORARY_BANK_DEGRADATION',

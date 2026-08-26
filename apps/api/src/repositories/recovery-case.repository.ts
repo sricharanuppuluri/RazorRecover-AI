@@ -332,6 +332,7 @@ export class RecoveryCaseRepository {
   }
 
   public async findAll(options?: {
+    merchantId?: string;
     status?: string;
     search?: string;
     page?: number;
@@ -344,7 +345,15 @@ export class RecoveryCaseRepository {
 
     try {
       const pool = getDbPool();
-      const { rows } = await pool.query('SELECT * FROM recovery_cases ORDER BY started_at DESC');
+      let query = 'SELECT * FROM recovery_cases';
+      const params: any[] = [];
+      if (options?.merchantId) {
+        query += ' WHERE merchant_id = $1';
+        params.push(options.merchantId);
+      }
+      query += ' ORDER BY started_at DESC';
+
+      const { rows } = await pool.query(query, params);
       if (rows && rows.length > 0) {
         allCases = rows;
       } else {
@@ -356,6 +365,11 @@ export class RecoveryCaseRepository {
       allCases = Array.from(RecoveryCaseRepository.memoryStore.values()).filter(
         c => !c.id.startsWith('pay_') && !c.id.startsWith('ord_')
       );
+    }
+
+    // Filter by merchantId
+    if (options?.merchantId) {
+      allCases = allCases.filter(c => c.merchant_id === options.merchantId);
     }
 
     // Filter by status

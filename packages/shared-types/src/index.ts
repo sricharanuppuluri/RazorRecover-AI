@@ -12,6 +12,8 @@ export interface HealthResponse {
   database: 'connected' | 'disconnected' | 'unconfigured';
 }
 
+export type UserRole = 'OWNER' | 'ADMIN' | 'OPERATOR' | 'VIEWER';
+
 export type Currency = 'INR' | 'USD' | 'EUR';
 
 export interface Merchant {

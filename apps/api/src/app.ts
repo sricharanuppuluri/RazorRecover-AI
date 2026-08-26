@@ -2,18 +2,31 @@ import express, { Express } from 'express';
 import cors from 'cors';
 import { requestLogger } from './middleware/logger.middleware';
 import { errorHandler } from './middleware/error.middleware';
+import { securityHeaders } from './middleware/security.middleware';
+import { createRateLimiter } from './middleware/rate-limiter.middleware';
 import healthRoutes from './routes/health.routes';
 import apiRoutes from './routes';
 import { env } from './config/env';
+import { HealthController } from './controllers/health.controller';
+
+const healthController = new HealthController();
 
 export function createApp(): Express {
   const app = express();
 
-  // Middleware
+  // Security Headers
+  app.use(securityHeaders);
+
+  // Rate Limiting (100 req per minute default)
+  app.use(createRateLimiter({ windowMs: 60 * 1000, max: 100 }));
+
+  // CORS
   app.use(cors({
     origin: [env.FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'],
     credentials: true,
   }));
+
+  // Request Body Parsing
   app.use(express.json({
     verify: (req: any, _res, buf) => {
       req.rawBody = buf;
@@ -22,11 +35,13 @@ export function createApp(): Express {
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);
 
-  // Health endpoint directly at root GET /health
+  // Health and Readiness endpoints at root GET /health & GET /ready
   app.use('/health', healthRoutes);
+  app.get('/ready', healthController.getReadiness);
 
   // API router mounted under /api
   app.use('/api', apiRoutes);
+  app.get('/api/ready', healthController.getReadiness);
 
   // Fallback 404 handler
   app.use((req, res) => {

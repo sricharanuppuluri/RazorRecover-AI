@@ -6,6 +6,7 @@ const analyticsService = new AnalyticsService();
 export async function getRevenueLeaksController(req: Request, res: Response, next: NextFunction) {
   try {
     const filters = {
+      merchantId: req.user?.merchantId,
       dateRange: req.query.dateRange as string,
       category: req.query.category as string,
       paymentMethod: req.query.paymentMethod as string,

@@ -56,6 +56,7 @@ export class AuditEventRepository {
   }
 
   public async findAll(options?: {
+    merchantId?: string;
     caseId?: string;
     eventType?: string;
     actorType?: string;
@@ -69,6 +70,10 @@ export class AuditEventRepository {
       let query = 'SELECT * FROM audit_events WHERE 1=1';
       const params: any[] = [];
 
+      if (options?.merchantId) {
+        params.push(options.merchantId);
+        query += ` AND merchant_id = $${params.length}`;
+      }
       if (options?.caseId) {
         params.push(options.caseId);
         query += ` AND recovery_case_id = $${params.length}`;
@@ -94,6 +99,9 @@ export class AuditEventRepository {
       list = [...AuditEventRepository.memoryStore];
     }
 
+    if (options?.merchantId) {
+      list = list.filter(e => e.merchant_id === options.merchantId);
+    }
     if (options?.caseId) {
       list = list.filter(e => e.recovery_case_id === options.caseId);
     }

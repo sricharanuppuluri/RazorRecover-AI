@@ -14,6 +14,14 @@ export async function createMerchantController(req: Request, res: Response, next
 
 export async function getMerchantController(req: Request, res: Response, next: NextFunction) {
   try {
+    const merchantId = req.user?.merchantId;
+    if (merchantId && req.params.id !== merchantId) {
+      return res.status(403).json({
+        status: 'error',
+        error: { message: 'You do not have permission to perform this action.', code: 'FORBIDDEN' }
+      });
+    }
+
     const merchant = await merchantService.getMerchantById(req.params.id);
     if (!merchant) {
       return res.status(404).json({ status: 'error', error: { message: 'Merchant not found', code: 'NOT_FOUND' } });

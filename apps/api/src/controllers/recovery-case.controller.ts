@@ -24,7 +24,11 @@ const auditRepo = new AuditEventRepository();
 
 export async function createRecoveryCaseController(req: Request, res: Response, next: NextFunction) {
   try {
-    const rc = await recoveryCaseService.createRecoveryCase(req.body);
+    const input = {
+      ...req.body,
+      merchant_id: req.user?.merchantId || req.body.merchant_id || 'mch_test_01'
+    };
+    const rc = await recoveryCaseService.createRecoveryCase(input);
     res.status(201).json({ status: 'success', data: rc });
   } catch (err) {
     next(err);
@@ -33,7 +37,9 @@ export async function createRecoveryCaseController(req: Request, res: Response, 
 
 export async function getRecoveryCasesController(req: Request, res: Response, next: NextFunction) {
   try {
+    const merchantId = req.user?.merchantId;
     const filters = {
+      merchantId,
       status: req.query.status as string,
       search: req.query.search as string,
       page: req.query.page ? parseInt(req.query.page as string, 10) : 1,
@@ -51,8 +57,10 @@ export async function getRecoveryCasesController(req: Request, res: Response, ne
 export async function getRecoveryCaseController(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
+    const merchantId = req.user?.merchantId;
+
     const rc = await caseRepo.findById(id);
-    if (!rc) {
+    if (!rc || (merchantId && rc.merchant_id !== merchantId)) {
       return res.status(404).json({ status: 'error', error: { message: 'Recovery case not found', code: 'NOT_FOUND' } });
     }
 
@@ -62,7 +70,7 @@ export async function getRecoveryCaseController(req: Request, res: Response, nex
     const aiDecision = await aiRepo.findByCaseId(rc.id);
     const policyDecision = await policyRepo.findLatestByCaseId(rc.id);
     const actions = await actionRepo.findByCaseId(rc.id);
-    const auditResult = await auditRepo.findAll({ caseId: rc.id, limit: 100 });
+    const auditResult = await auditRepo.findAll({ merchantId, caseId: rc.id, limit: 100 });
 
     const detail = {
       ...rc,
@@ -139,6 +147,13 @@ export async function getRecoveryCaseController(req: Request, res: Response, nex
 export async function triggerAIDecisionController(req: Request, res: Response, next: NextFunction) {
   try {
     const caseId = req.params.id;
+    const merchantId = req.user?.merchantId;
+
+    const rc = await caseRepo.findById(caseId);
+    if (!rc || (merchantId && rc.merchant_id !== merchantId)) {
+      return res.status(404).json({ status: 'error', error: { message: 'Recovery case not found', code: 'NOT_FOUND' } });
+    }
+
     const result = await aiPolicyPipelineService.processCaseAIDecision(caseId);
     res.status(200).json({ status: 'success', data: result });
   } catch (err: any) {

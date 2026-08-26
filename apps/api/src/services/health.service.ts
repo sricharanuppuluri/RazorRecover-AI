@@ -15,4 +15,15 @@ export class HealthService {
       database: dbHealth
     };
   }
+
+  public async getReadinessStatus(): Promise<{ status: 'ready' | 'not_ready'; service: string; timestamp: string; database: any }> {
+    const dbHealth = await checkDatabaseHealth();
+    const isReady = dbHealth === 'connected' || dbHealth === 'unconfigured';
+    return {
+      status: isReady ? 'ready' : 'not_ready',
+      service: 'razorrecover-api',
+      timestamp: new Date().toISOString(),
+      database: dbHealth
+    };
+  }
 }

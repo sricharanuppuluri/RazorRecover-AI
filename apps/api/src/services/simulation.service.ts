@@ -29,7 +29,7 @@ export class SimulationService {
   private aiPolicyService = new AIPolicyPipelineService();
   private actionExecutor = new ActionExecutorService();
 
-  public async runSimulation(scenario: ScenarioType): Promise<{
+  public async runSimulation(scenario: ScenarioType, merchantId = 'mch_test_01'): Promise<{
     scenario: ScenarioType;
     title: string;
     description: string;
@@ -90,7 +90,7 @@ export class SimulationService {
 
     await this.customerRepo.create({
       id: customerId,
-      merchant_id: 'mch_test_01',
+      merchant_id: merchantId,
       external_customer_id: `ext_${customerId}`,
       contact_opt_in: true,
       successful_payment_count: scenario === 'SCENARIO_B' ? 0 : 3,
@@ -103,7 +103,7 @@ export class SimulationService {
 
     await this.orderRepo.create({
       id: orderId,
-      merchant_id: 'mch_test_01',
+      merchant_id: merchantId,
       razorpay_order_id: orderId,
       customer_id: customerId,
       amount,
@@ -114,7 +114,7 @@ export class SimulationService {
 
     await this.paymentRepo.create({
       id: paymentId,
-      merchant_id: 'mch_test_01',
+      merchant_id: merchantId,
       razorpay_payment_id: paymentId,
       razorpay_order_id: orderId,
       customer_id: customerId,
@@ -142,7 +142,7 @@ export class SimulationService {
     const rc = await this.recoveryCaseService.createRecoveryCase({
       order_id: orderId,
       payment_id: paymentId,
-      merchant_id: 'mch_test_01'
+      merchant_id: merchantId
     });
 
     steps.push({

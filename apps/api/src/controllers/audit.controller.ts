@@ -6,6 +6,7 @@ const auditRepo = new AuditEventRepository();
 export async function getAuditTrailController(req: Request, res: Response, next: NextFunction) {
   try {
     const filters = {
+      merchantId: req.user?.merchantId,
       caseId: req.query.caseId as string,
       eventType: req.query.eventType as string,
       actorType: req.query.actorType as string,
