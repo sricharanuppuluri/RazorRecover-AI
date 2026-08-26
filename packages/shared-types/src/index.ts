@@ -375,3 +375,39 @@ export interface AIDecisionPipelineResult {
   };
 }
 
+// Phase 10 — Advanced Degradation, Receivables & Export Types
+export interface DegradationAlert {
+  id: string;
+  merchantId: string;
+  method?: string;
+  bank?: string;
+  failureCount: number;
+  failureRate: number;
+  totalAttempts: number;
+  windowMinutes: number;
+  detectedAt: string;
+  suggestedAction: AllowedAction;
+}
+
+export type PromiseStatus = 'PENDING' | 'KEPT' | 'BROKEN' | 'CANCELLED';
+
+export interface PromiseToPay {
+  id: string;
+  merchantId: string;
+  recoveryCaseId: string;
+  customerId: string;
+  promisedAmount: number; // in paise
+  promisedDate: string;
+  status: PromiseStatus;
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LocalizedNotificationMessage {
+  language: 'en' | 'hinglish';
+  headline: string;
+  body: string;
+  actionUrl?: string;
+}
+

@@ -125,4 +125,9 @@ export class AuditEventRepository {
       limit
     };
   }
+
+  public async listByMerchant(merchantId: string): Promise<AuditEvent[]> {
+    return AuditEventRepository.memoryStore.filter(e => e.merchant_id === merchantId);
+  }
 }
+

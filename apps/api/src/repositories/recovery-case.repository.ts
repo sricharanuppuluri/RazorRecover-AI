@@ -543,4 +543,10 @@ export class RecoveryCaseRepository {
       return record || null;
     }
   }
+
+  public async findAllByMerchant(merchantId: string): Promise<RecoveryCase[]> {
+    RecoveryCaseRepository.seedInitialDemoData();
+    return Array.from(RecoveryCaseRepository.memoryStore.values()).filter((c) => c.merchant_id === merchantId);
+  }
 }
+

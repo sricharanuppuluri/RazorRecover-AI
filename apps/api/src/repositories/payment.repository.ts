@@ -258,4 +258,20 @@ export class PaymentRepository {
       methodFailureRate: methodTotal > 0 ? methodFailed / methodTotal : 0
     };
   }
+
+  public async findByMerchantId(merchantId: string): Promise<Payment[]> {
+    const unique = new Map<string, Payment>();
+    for (const p of PaymentRepository.memoryStore.values()) {
+      if (p.merchant_id === merchantId) {
+        unique.set(p.id, p);
+      }
+    }
+    return Array.from(unique.values());
+  }
+
+  public async clear(): Promise<void> {
+    PaymentRepository.memoryStore.clear();
+  }
 }
+
+
