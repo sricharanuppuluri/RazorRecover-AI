@@ -6,6 +6,7 @@ import orderRoutes from './order.routes';
 import paymentRoutes from './payment.routes';
 import recoveryCaseRoutes from './recovery-case.routes';
 import configRoutes from './config.routes';
+import webhookRoutes from './webhook.routes';
 
 const router = Router();
 
@@ -14,6 +15,9 @@ router.use('/health', healthRoutes);
 
 // Config endpoint
 router.use('/config', configRoutes);
+
+// Webhook endpoint
+router.use('/webhooks', webhookRoutes);
 
 // Core Data Layer Persistence Verification Endpoints
 router.use('/merchants', merchantRoutes);
