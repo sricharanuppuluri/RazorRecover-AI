@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createRecoveryCaseController,
+  getRecoveryCasesController,
   getRecoveryCaseController,
   triggerAIDecisionController
 } from '../controllers/recovery-case.controller';
@@ -16,6 +17,7 @@ import { validateRecoveryCaseInput } from '../middleware/validation.middleware';
 const router = Router();
 
 router.post('/', validateRecoveryCaseInput, createRecoveryCaseController);
+router.get('/', getRecoveryCasesController);
 router.get('/:id', getRecoveryCaseController);
 router.post('/:id/ai-decision', triggerAIDecisionController);
 
