@@ -547,5 +547,54 @@ export interface VoiceProviderResponse {
   suggestedAction?: string;
 }
 
+// Phase 13 — Multi-Channel Notifications, Causal Analysis & Operational Reports Types
+export type NotificationChannel = 'WHATSAPP' | 'SMS' | 'EMAIL' | 'WEBHOOK';
+export type NotificationDeliveryStatus = 'PENDING' | 'SENT' | 'DELIVERED' | 'FAILED' | 'OPTED_OUT';
+
+export interface NotificationDispatch {
+  id: string;
+  merchantId: string;
+  recoveryCaseId: string;
+  customerId: string;
+  channel: NotificationChannel;
+  recipient: string;
+  templateName: string;
+  language: 'ENGLISH' | 'HINDI' | 'HINGLISH';
+  status: NotificationDeliveryStatus;
+  sentAt?: string;
+  deliveredAt?: string;
+  errorMessage?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface CausalMetrics {
+  merchantId: string;
+  totalTreatmentCases: number;
+  totalControlCases: number;
+  treatmentRecoveredAmount: number;
+  controlRecoveredAmount: number;
+  treatmentConversionRate: number;
+  controlConversionRate: number;
+  incrementalRevenueRecovered: number;
+  averageTreatmentEffect: number;
+  causalAttributableYield: number;
+  confidenceInterval95: [number, number];
+  calculatedAt: string;
+}
+
+export interface ScheduledReport {
+  id: string;
+  merchantId: string;
+  title: string;
+  cadence: 'DAILY' | 'WEEKLY' | 'MONTHLY';
+  recipients: string[];
+  format: 'JSON' | 'CSV' | 'PDF';
+  status: 'ACTIVE' | 'PAUSED';
+  lastGeneratedAt?: string;
+  nextScheduledAt: string;
+  createdAt: string;
+}
+
+
 
 

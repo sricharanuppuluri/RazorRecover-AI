@@ -21,6 +21,9 @@ import subscriptionRoutes from './subscription.routes';
 import experimentRoutes from './experiment.routes';
 import calibrationRoutes from './calibration.routes';
 import voiceRoutes from './voice.routes';
+import notificationRoutes from './notification.routes';
+import causalAnalysisRoutes from './causal-analysis.routes';
+import scheduledReportRoutes from './scheduled-report.routes';
 
 const router = Router();
 
@@ -33,7 +36,7 @@ router.use('/config', configRoutes);
 // Webhook endpoint
 router.use('/webhooks', webhookRoutes);
 
-// Dashboard & Merchant UI Endpoints (Phase 8, 10, 11 & 12)
+// Dashboard & Merchant UI Endpoints (Phase 8, 10, 11, 12 & 13)
 router.use('/dashboard', dashboardRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/evaluation', evaluationRoutes);
@@ -47,6 +50,9 @@ router.use('/subscriptions', subscriptionRoutes);
 router.use('/experiments', experimentRoutes);
 router.use('/calibration', calibrationRoutes);
 router.use('/voice', voiceRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/causal-analysis', causalAnalysisRoutes);
+router.use('/reports', scheduledReportRoutes);
 
 
 // Core Data Layer Persistence Endpoints
