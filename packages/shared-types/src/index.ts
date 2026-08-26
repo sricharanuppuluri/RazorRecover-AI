@@ -100,12 +100,29 @@ export type CaseStatus =
   | 'STOPPED';
 
 export type AllowedAction =
+  | 'RETRY'
+  | 'NOTIFY'
+  | 'ESCALATE'
+  | 'NO_ACTION'
   | 'WAIT_AND_RETRY'
   | 'OFFER_ALTERNATE_PAYMENT'
   | 'SEND_RECOVERY_LINK'
   | 'SEND_REMINDER'
   | 'ESCALATE_HUMAN'
   | 'STOP';
+
+export interface PolicyProfile {
+  id: string;
+  merchant_id: string;
+  max_retry_attempts: number;
+  max_notifications: number;
+  high_value_threshold: number; // In paise
+  min_recovery_probability: number; // [0, 1]
+  min_ai_confidence: number; // [0, 1]
+  recovery_window_hours: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface RecoveryCase {
   id: string;
@@ -252,3 +269,74 @@ export interface RecoveryAnalysisResult {
   recoveryCaseId?: string;
   eligibleForRecovery: boolean;
 }
+
+// Phase 5 AI Decision & Policy Engine Types
+export interface AIInputContext {
+  merchant: {
+    id: string;
+    currency: Currency;
+    policyProfileId: string;
+    highValueThreshold: number;
+  };
+  customer: {
+    successfulPaymentCount: number;
+    failedPaymentCount: number;
+    contactOptIn: boolean;
+    totalSuccessValue: number;
+  };
+  order: {
+    id: string;
+    amount: number;
+    currency: Currency;
+    status: OrderStatus;
+    productCategory?: string;
+    createdAt: string;
+  };
+  payment?: {
+    id: string;
+    method?: string;
+    bank?: string;
+    status: PaymentStatus;
+    errorCode?: string;
+    errorDescription?: string;
+    errorSource?: string;
+    errorStep?: string;
+    errorReason?: string;
+    failureCount: number;
+  };
+  analysis: RecoveryAnalysisResult;
+}
+
+export interface AIDecisionOutput {
+  diagnosis: string;
+  recoveryProbability: number; // [0.0, 1.0]
+  recommendedAction: AllowedAction;
+  rationale: string;
+  confidence: number; // [0.0, 1.0]
+}
+
+export interface PolicyEvaluationResult {
+  action: AllowedAction;
+  allowed: boolean;
+  reasons: string[];
+  violatedRules: string[];
+  requiresHuman: boolean;
+  policyVersion: string;
+}
+
+export interface AIDecisionPipelineResult {
+  recoveryCaseId: string;
+  deterministicAnalysis: RecoveryAnalysisResult;
+  aiDecision: AIDecisionOutput & {
+    id: string;
+    model: string;
+    promptVersion: string;
+    inputContextHash: string;
+    createdAt: string;
+  };
+  policyDecision: PolicyEvaluationResult & {
+    id: string;
+    createdAt: string;
+  };
+}
+

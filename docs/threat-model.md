@@ -10,7 +10,7 @@ RazorRecover AI is designed with strict security controls separating AI decision
 
 ### 1. Server-Side Secret Management
 - **Rule**: `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`, `LLM_API_KEY`, and `DATABASE_URL` must remain strictly server-side.
-- **Enforcement**: Secrets are loaded via `dotenv` in the Express backend (`apps/api`) and never exposed to the frontend bundle or client APIs. `RAZORPAY_WEBHOOK_SECRET` is never returned in API responses or written to logs.
+- **Enforcement**: Secrets are loaded via `dotenv` in the Express backend (`apps/api`) and never exposed to the frontend bundle or client APIs. `RAZORPAY_WEBHOOK_SECRET` and `LLM_API_KEY` are never returned in API responses or written to logs.
 
 ### 2. Webhook Integrity & Signature Verification (Phase 3 Implemented)
 - **Rule**: Incoming webhooks from Razorpay must be verified using HMAC-SHA256 signature verification (`x-razorpay-signature`) over the unparsed raw request body buffer (`req.rawBody`).
@@ -24,16 +24,20 @@ RazorRecover AI is designed with strict security controls separating AI decision
 - **Rule**: The payment reconciler enforces monotonic state progress (`CREATED` < `AUTHORIZED` < `CAPTURED`).
 - **Protection**: Out-of-order webhook delivery (e.g. `payment.failed` arriving after `payment.captured`) cannot downgrade a trusted successful payment or paid order back to a failed state.
 
-### 5. Separation of AI Recommendation & Financial Authority
-- **Rule**: The LLM acts purely as a decision-support component. It has **ZERO** direct authority over money movement or system actions.
-- **Enforcement**: All LLM recommendations must pass through a deterministic Policy Engine before any action execution.
+### 5. AI Output Untrusted Handling & Schema Validation (Phase 5 Implemented)
+- **Rule**: LLM outputs are treated as untrusted input.
+- **Enforcement**: Parsed and validated strictly against `AIDecisionOutputSchema`. Any invalid JSON, missing fields, or out-of-bound numerical values trigger an automatic fallback to `ESCALATE` with `confidence: 0.0`.
 
-### 6. PII Minimization
-- **Rule**: Customer email and phone identifiers are tokenized or hashed (`email_hash`, `phone_hash`) before storage or processing.
+### 6. Prompt Injection Defense & Secret Stripping (Phase 5 Implemented)
+- **Rule**: Prompts strictly structure inputs under context blocks and instruct model to treat user text (e.g., error description, product category) as raw data, NEVER system instructions.
+- **Enforcement**: All secrets, DB credentials, webhook keys, and raw credit card numbers are stripped prior to constructing prompt payloads and SHA-256 context hashes.
 
-### 7. Git & Version Control Safety
-- **Rule**: Secrets must never be committed to Git repositories.
-- **Enforcement**: `.gitignore` strictly excludes `.env` and `.env.*` files. `.env.example` contains placeholders only.
+### 7. Deterministic Policy Override (Phase 5 Implemented)
+- **Rule**: The LLM acts purely as a decision-support component with **ZERO** direct authority over money movement or system actions.
+- **Enforcement**: All LLM recommendations must pass through the deterministic Policy Engine before any action execution. High-value transactions, limit breaches, or low confidence always escalate to human review.
+
+### 8. PII Minimization & Git Safety
+- **Rule**: Customer email and phone identifiers are tokenized or hashed (`email_hash`, `phone_hash`) before storage or processing. `.gitignore` strictly excludes `.env` and `.env.*` files.
 
 ---
 
@@ -45,5 +49,6 @@ RazorRecover AI is designed with strict security controls separating AI decision
 | Webhook Replay / Duplicate Delivery | Medium | Double state transitions / double counting | Deduplication by `x-razorpay-event-id` in `webhook_events` table | **Phase 3 Implemented** |
 | Out-Of-Order Event Delivery | Medium | Financial state corruption | Monotonic status transition rules & success preservation | **Phase 3 Implemented** |
 | Secrets Exposure | Critical | Key compromise | Server-side env isolation + `.gitignore` enforcement | **Phase 0+ Implemented** |
-| Prompt Injection | High | Malicious action recommendation | Schema validation + Deterministic Policy Engine override | Phase 4+ |
-| Unauthorized Financial Action | High | Financial loss / policy breach | Hardcoded stopping rules and human approval for high values | Phase 4+ |
+| Prompt Injection | High | Malicious action recommendation | Schema validation + Context hashing + Policy Engine override | **Phase 5 Implemented** |
+| Malformed / Hallucinated AI Output | High | Unsafe system state | Strict Zod/Schema validator + Safe Fallback to `ESCALATE` | **Phase 5 Implemented** |
+| Unauthorized Financial Action | High | Financial loss / policy breach | Deterministic Policy Engine (final authority) + Human escalation for high value | **Phase 5 Implemented** |

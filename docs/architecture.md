@@ -26,35 +26,26 @@ Payment State Reconciler (Phase 3 Completed)
    │  • Out-of-Order Delivery Guard (Protects CAPTURED / PAID states from stale failure downgrade)
    │  • Idempotent State Transitions
    ▼
-Core Data Layer & Immutable Audit Trail
-   │  • Payment, Order, Customer, WebhookEvent & AuditEvent Persistence
-   │  • Audit Event Logging
+Failure Taxonomy & Recovery Scoring (Phase 4 Completed)
+   │  • Deterministic Root-Cause Diagnosis
+   │  • Basis-Point (0-10,000) Integer Math for expectedRecoveryValue & priorityScore
+   │  • High-Value Threshold Detection
    ▼
-[Future Phases] Recovery Engine -> AI Decision Engine -> Policy Engine -> Action Executor
-```
-
----
-
-## Webhook Architecture (Phase 3 Detailed Flow)
-
-```text
-HTTP POST /api/webhooks/razorpay
-  ├── 1. Express rawBody capture (req.rawBody)
-  ├── 2. Signature verification (verifier.ts: HMAC-SHA256 sha256(rawBody, secret) vs x-razorpay-signature)
-  │      └── Invalid → 400 Bad Request + Log audit event 'webhook_signature_rejected'
-  ├── 3. Event ID check (x-razorpay-event-id)
-  │      └── Missing → 400 Bad Request
-  ├── 4. Idempotency Check (WebhookEventRepository.findByRazorpayEventId)
-  │      └── Exists → 200 OK + { duplicate: true } (No duplicate processing)
-  ├── 5. Persist WebhookEvent (status: 'RECEIVED')
-  ├── 6. Dispatch to PaymentStateReconciler:
-  │      ├── payment.failed     → Payment status FAILED (if not already CAPTURED/PAID)
-  │      ├── payment.authorized → Payment status AUTHORIZED (if not already CAPTURED/PAID)
-  │      ├── payment.captured   → Payment status CAPTURED, Order status PAID (Authoritative Success)
-  │      ├── order.paid         → Order status PAID, Payment status CAPTURED
-  │      └── unknown event      → Safely ignored (status: 'IGNORED')
-  ├── 7. Audit Event Logging (logEvent with correlation_id)
-  └── 8. Quick 200 OK Acknowledgement response
+AI Decision Engine (Phase 5 Completed)
+   │  • Generates diagnosis, recoveryProbability, recommendedAction, rationale, confidence
+   │  • Strict JSON Schema Validation (Treats LLM output as UNTRUSTED input)
+   │  • Deterministic SHA-256 Context Hashing & Prompt Injection Defense
+   │  • LLM Provider Fallback (Defaults to ESCALATE with confidence 0.0 on error/timeout)
+   ▼
+Deterministic Policy Guardrails (Phase 5 Completed)
+   │  • Final authority (ALLOW / DENY / ESCALATE)
+   │  • Enforces financial safety, retry/notification limits, contact opt-in, high-value review
+   │  • Versioned Policy Rules ('policy-v1')
+   ▼
+Immutable Audit Trail
+   │  • AI_DECISION_GENERATED, AI_DECISION_FALLBACK_TRIGGERED, POLICY_EVALUATION_COMPLETED
+   ▼
+[Phase 6+] Action Execution Engine
 ```
 
 ---
@@ -70,11 +61,19 @@ HTTP POST /api/webhooks/razorpay
 - **Role**: Reconciles payment and order state upon receiving verified webhooks.
 - **Out-of-Order Safety**: Enforces monotonic state transition rules. If a late `payment.failed` event arrives after a transaction has reached `CAPTURED` or `PAID`, the failure is ignored to preserve financial state integrity.
 
-### 3. Audit Service & Event Persistence (Phase 3 Completed)
-- **Role**: Records an immutable audit log (`audit_events` table) for every security decision, event arrival, deduplication, state transition, or out-of-order event.
+### 3. Failure Taxonomy & Recovery Risk Engine (Phase 4 Completed)
+- **Role**: Categorizes failed payments (e.g. `TEMPORARY_BANK_DEGRADATION`, `CUSTOMER_AUTHENTICATION_ISSUE`, `INSUFFICIENT_FUNDS`, `REPEATED_FAILURE`, `CHECKOUT_ABANDONMENT`).
+- **Scoring**: Calculates `expectedRecoveryValue` using integer-safe basis-point arithmetic and `priorityScore` (0-100).
 
-### 4. Recovery Engine & State Machine (Phase 4+)
-- **Role**: Tracks recovery workflows across standard lifecycle states (`NEW` → `DETECTED` → `DIAGNOSING` → `SCORED` → `AI_RECOMMENDED` → `POLICY_CHECK` → `ACTION_SENT` → `WAITING_FOR_OUTCOME` → `RECOVERED`/`STOPPED`/`HUMAN_REVIEW`).
+### 4. AI Decision Engine (Phase 5 Completed)
+- **Role**: Advisory decision-support system model that generates structured recommendations (`RETRY`, `NOTIFY`, `ESCALATE`, `NO_ACTION`).
+- **Schema & Security**: Validated strictly via `validateAIDecisionOutput`. Excludes API keys, secrets, and raw credentials from prompt text and context hashes (`hashContext`). Fallbacks safely to `ESCALATE` if LLM fails or times out.
 
-### 5. AI Decision Engine & Deterministic Policy Engine (Phase 4+)
-- **Role**: Diagnoses root causes, scores recovery probability, and evaluates deterministic policy guardrails before executing recovery actions.
+### 5. Deterministic Policy Guardrail Engine (Phase 5 Completed)
+- **Role**: Final deterministic gatekeeper serving as absolute authority over AI recommendations.
+- **Rules**:
+  - Rejects paid/captured or zero amount transactions (`PAYMENT_ALREADY_CAPTURED`, `ZERO_AMOUNT_AT_RISK`).
+  - Enforces retry limits (max 3) and notification limits (max 2).
+  - Enforces customer contact opt-in (`CUSTOMER_CONTACT_NOT_ALLOWED`).
+  - Escalates high-value transactions (`HIGH_VALUE_REQUIRES_REVIEW`) or low AI confidence (< 0.60).
+  - Versioned under `policy-v1`.
