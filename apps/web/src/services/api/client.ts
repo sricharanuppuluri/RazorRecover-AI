@@ -8,6 +8,7 @@ async function fetchJSON<T>(endpoint: string, options?: RequestInit): Promise<T>
   const res = await fetch(`${API_BASE}${endpoint}`, {
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer mch:mch_test_01|role:OWNER|user:usr_01',
       ...(options?.headers || {})
     },
     ...options

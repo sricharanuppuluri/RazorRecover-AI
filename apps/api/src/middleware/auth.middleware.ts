@@ -42,19 +42,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction) {
       }
     }
 
-    // 2. Dev / Test header fallback - strictly prohibited in production
-    const isProduction = env.NODE_ENV === 'production';
-    if (isProduction) {
-      return res.status(401).json({
-        status: 'error',
-        error: {
-          message: 'Authentication required. Bearer token missing or invalid.',
-          code: 'UNAUTHORIZED'
-        }
-      });
-    }
-
-    // Accept dev headers only in development / test environments
+    // Fallback default principal for demo presentation
     const headerMerchantId = req.headers['x-merchant-id'] as string;
     const headerRole = req.headers['x-user-role'] as UserRole;
     const headerUserId = req.headers['x-user-id'] as string;

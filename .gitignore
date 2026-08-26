@@ -34,3 +34,6 @@ RazorRecover_AI_Complete_Project_Specification.md
 Thumbs.db
 .vscode/
 .idea/
+
+.vercel
+.env*
