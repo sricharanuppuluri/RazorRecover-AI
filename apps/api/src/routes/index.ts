@@ -20,6 +20,7 @@ import abandonmentRoutes from './abandonment.routes';
 import subscriptionRoutes from './subscription.routes';
 import experimentRoutes from './experiment.routes';
 import calibrationRoutes from './calibration.routes';
+import voiceRoutes from './voice.routes';
 
 const router = Router();
 
@@ -32,7 +33,7 @@ router.use('/config', configRoutes);
 // Webhook endpoint
 router.use('/webhooks', webhookRoutes);
 
-// Dashboard & Merchant UI Endpoints (Phase 8, 10 & 11)
+// Dashboard & Merchant UI Endpoints (Phase 8, 10, 11 & 12)
 router.use('/dashboard', dashboardRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/evaluation', evaluationRoutes);
@@ -45,6 +46,8 @@ router.use('/abandonment', abandonmentRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/experiments', experimentRoutes);
 router.use('/calibration', calibrationRoutes);
+router.use('/voice', voiceRoutes);
+
 
 // Core Data Layer Persistence Endpoints
 router.use('/merchants', merchantRoutes);

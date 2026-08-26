@@ -544,6 +544,24 @@ export class RecoveryCaseRepository {
     }
   }
 
+  public async update(rc: RecoveryCase): Promise<RecoveryCase> {
+    RecoveryCaseRepository.seedInitialDemoData();
+    RecoveryCaseRepository.memoryStore.set(rc.id, { ...rc });
+    try {
+      const pool = getDbPool();
+      const query = `
+        UPDATE recovery_cases
+        SET status = $1, policy_decision = $2, retry_count = $3, notification_count = $4, closed_at = $5, close_reason = $6
+        WHERE id = $7 RETURNING *;
+      `;
+      const values = [rc.status, rc.policy_decision || null, rc.retry_count, rc.notification_count, rc.closed_at || null, rc.close_reason || null, rc.id];
+      const { rows } = await pool.query(query, values);
+      return rows[0] || rc;
+    } catch (err: any) {
+      return rc;
+    }
+  }
+
   public async findAllByMerchant(merchantId: string): Promise<RecoveryCase[]> {
     RecoveryCaseRepository.seedInitialDemoData();
     return Array.from(RecoveryCaseRepository.memoryStore.values()).filter((c) => c.merchant_id === merchantId);
@@ -554,5 +572,6 @@ export class RecoveryCaseRepository {
     RecoveryCaseRepository.seeded = true;
   }
 }
+
 
 

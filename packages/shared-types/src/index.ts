@@ -501,4 +501,51 @@ export interface ModelDriftAlert {
   recommendation: string;
 }
 
+// Phase 12 — Voice Recovery Assistant Types
+export type VoiceCallStatus = 'INITIATED' | 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'OPTED_OUT';
+export type VoiceIntentType = 'REQUEST_PAYMENT_LINK' | 'CONFIRM_RETRY' | 'CHECK_STATUS' | 'OPTOUT' | 'ESCALATE_HUMAN' | 'UNKNOWN';
+export type VoiceLanguage = 'ENGLISH' | 'HINGLISH' | 'HINDI';
+
+export interface VoiceUtterance {
+  speaker: 'ASSISTANT' | 'CUSTOMER';
+  text: string;
+  timestamp: string;
+}
+
+export interface VoiceSession {
+  id: string;
+  merchantId: string;
+  recoveryCaseId: string;
+  phoneNumber: string;
+  language: VoiceLanguage;
+  status: VoiceCallStatus;
+  lastUtterance?: string;
+  detectedIntent?: VoiceIntentType;
+  transcript: VoiceUtterance[];
+  executedAction?: string;
+  actionResult?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VoiceCallRequest {
+  recoveryCaseId: string;
+  language?: VoiceLanguage;
+}
+
+export interface VoiceInteractionRequest {
+  sessionId: string;
+  userUtterance: string;
+}
+
+export interface VoiceProviderResponse {
+  sessionId: string;
+  recognizedText: string;
+  detectedIntent: VoiceIntentType;
+  confidence: number;
+  spokenResponse: string;
+  suggestedAction?: string;
+}
+
+
 
