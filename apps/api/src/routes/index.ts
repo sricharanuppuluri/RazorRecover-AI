@@ -16,6 +16,10 @@ import auditRoutes from './audit.routes';
 import merchantSettingsRoutes from './merchant-settings.routes';
 import promiseToPayRoutes from './promise-to-pay.routes';
 import degradationRoutes from './degradation.routes';
+import abandonmentRoutes from './abandonment.routes';
+import subscriptionRoutes from './subscription.routes';
+import experimentRoutes from './experiment.routes';
+import calibrationRoutes from './calibration.routes';
 
 const router = Router();
 
@@ -28,7 +32,7 @@ router.use('/config', configRoutes);
 // Webhook endpoint
 router.use('/webhooks', webhookRoutes);
 
-// Dashboard & Merchant UI Endpoints (Phase 8 & Phase 10)
+// Dashboard & Merchant UI Endpoints (Phase 8, 10 & 11)
 router.use('/dashboard', dashboardRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/evaluation', evaluationRoutes);
@@ -37,6 +41,10 @@ router.use('/audit', auditRoutes);
 router.use('/merchant', merchantSettingsRoutes);
 router.use('/promises', promiseToPayRoutes);
 router.use('/degradation', degradationRoutes);
+router.use('/abandonment', abandonmentRoutes);
+router.use('/subscriptions', subscriptionRoutes);
+router.use('/experiments', experimentRoutes);
+router.use('/calibration', calibrationRoutes);
 
 // Core Data Layer Persistence Endpoints
 router.use('/merchants', merchantRoutes);
@@ -47,4 +55,5 @@ router.use('/recovery-cases', recoveryCaseRoutes);
 router.use('/recovery-links', recoveryLinkRoutes);
 
 export default router;
+
 

@@ -411,3 +411,94 @@ export interface LocalizedNotificationMessage {
   actionUrl?: string;
 }
 
+// Phase 11 — Advanced Recovery Extensions (Abandonment, Subscriptions, Experimentation & Calibration)
+export type CheckoutSessionStatus = 'STARTED' | 'PAYMENT_ATTEMPTED' | 'ABANDONED' | 'RECOVERED' | 'EXPIRED';
+
+export interface CheckoutSession {
+  id: string;
+  merchantId: string;
+  orderId: string;
+  customerId: string;
+  amount: number; // in paise
+  currency: string;
+  status: CheckoutSessionStatus;
+  startedAt: string;
+  lastAttemptAt?: string;
+  abandonedAt?: string;
+  recoveryCaseId?: string;
+}
+
+export type SubscriptionStatus = 'ACTIVE' | 'PAST_DUE' | 'FAILED' | 'RECOVERED' | 'CANCELLED';
+
+export interface SubscriptionFailure {
+  id: string;
+  merchantId: string;
+  subscriptionId: string;
+  customerId: string;
+  amount: number; // in paise
+  planName: string;
+  failureReason: string;
+  retryCount: number;
+  status: SubscriptionStatus;
+  lastAttemptAt: string;
+  nextRetryAt?: string;
+  recoveryCaseId?: string;
+}
+
+export interface ExperimentVariant {
+  id: string;
+  name: string;
+  strategy: 'AI_AGENT' | 'RULE_BASED' | 'CONTROL_NO_RECOVERY';
+  weight: number; // e.g. 50 for 50%
+}
+
+export interface RecoveryExperiment {
+  id: string;
+  merchantId: string;
+  name: string;
+  status: 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
+  variants: ExperimentVariant[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExperimentAnalytics {
+  experimentId: string;
+  merchantId: string;
+  totalCases: number;
+  variantMetrics: Record<string, {
+    cases: number;
+    recoveredCases: number;
+    recoveredAmount: number; // in paise
+    recoveryRate: number;
+    recoveryYield: number;
+  }>;
+}
+
+export interface CalibrationMetrics {
+  merchantId: string;
+  totalEvaluatedCases: number;
+  expectedCalibrationError: number; // ECE [0, 1]
+  brierScore: number; // [0, 1]
+  diagnosisAccuracy: number; // [0, 1]
+  binnedCalibration: Array<{
+    binMin: number;
+    binMax: number;
+    predictedProb: number;
+    actualRecoveryRate: number;
+    count: number;
+  }>;
+}
+
+export interface ModelDriftAlert {
+  id: string;
+  merchantId: string;
+  metric: 'DIAGNOSIS_ACCURACY' | 'RECOVERY_YIELD' | 'CALIBRATION_ERROR';
+  threshold: number;
+  actualValue: number;
+  severity: 'LOW' | 'MEDIUM' | 'HIGH';
+  detectedAt: string;
+  recommendation: string;
+}
+
+

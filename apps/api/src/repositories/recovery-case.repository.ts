@@ -548,5 +548,11 @@ export class RecoveryCaseRepository {
     RecoveryCaseRepository.seedInitialDemoData();
     return Array.from(RecoveryCaseRepository.memoryStore.values()).filter((c) => c.merchant_id === merchantId);
   }
+
+  public async clear(): Promise<void> {
+    RecoveryCaseRepository.memoryStore.clear();
+    RecoveryCaseRepository.seeded = true;
+  }
 }
+
 

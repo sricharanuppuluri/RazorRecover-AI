@@ -129,5 +129,10 @@ export class AuditEventRepository {
   public async listByMerchant(merchantId: string): Promise<AuditEvent[]> {
     return AuditEventRepository.memoryStore.filter(e => e.merchant_id === merchantId);
   }
+
+  public async clear(): Promise<void> {
+    AuditEventRepository.memoryStore = [];
+  }
 }
+
 
