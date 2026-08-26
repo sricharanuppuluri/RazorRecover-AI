@@ -17,23 +17,17 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@razorrecover/shared-types": [
-        "../../packages/shared-types/src/index.ts",
-        "../../packages/shared-types/dist/index.d.ts"
-      ],
-      "@razorrecover/policy-engine": [
-        "../../packages/policy-engine/src/index.ts",
-        "../../packages/policy-engine/dist/index.d.ts"
-      ],
-      "@razorrecover/recovery-engine": [
-        "../../packages/recovery-engine/src/index.ts",
-        "../../packages/recovery-engine/dist/index.d.ts"
-      ],
-      "@razorrecover/evaluation": [
-        "../../packages/evaluation/src/index.ts",
-        "../../packages/evaluation/dist/index.d.ts"
-      ]
+      "@razorrecover/shared-types": ["../../packages/shared-types/src/index.ts"],
+      "@razorrecover/policy-engine": ["../../packages/policy-engine/src/index.ts"],
+      "@razorrecover/recovery-engine": ["../../packages/recovery-engine/src/index.ts"],
+      "@razorrecover/evaluation": ["../../packages/evaluation/src/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": [
+    "src",
+    "../../packages/shared-types/src/**/*",
+    "../../packages/policy-engine/src/**/*",
+    "../../packages/recovery-engine/src/**/*",
+    "../../packages/evaluation/src/**/*"
+  ]
 }
