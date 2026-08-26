@@ -1,23 +1,34 @@
 # RazorRecover AI — Merchant Revenue Recovery System
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Vercel_Production-000000?style=for-the-badge&logo=vercel)](https://razorpay-recover-ai.vercel.app)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github)](https://github.com/sricharanuppuluri/RazorRecover-AI)
+
+## 🌐 Live Production Deployment
+- **Live Platform URL**: **[https://razorpay-recover-ai.vercel.app](https://razorpay-recover-ai.vercel.app)**
+- **API Health Endpoint**: **[https://razorpay-recover-ai.vercel.app/health](https://razorpay-recover-ai.vercel.app/health)**
+- **Track**: Razorpay AI Buildathon — Track 03: Autonomous AI Revenue Recovery
+
+---
+
 ## 1. Project Name
 **RazorRecover AI** (Razorpay AI Buildathon — Track 03: AI Revenue Recovery)
 
 ## 2. Description
-RazorRecover AI is an AI-powered revenue-recovery platform designed for merchants using Razorpay test-mode payment flows. It detects revenue at risk from payment failures, payment degradation, and checkout abandonment, diagnoses root causes using an AI decision engine, scores recovery probability, and evaluates policy-bounded interventions while maintaining an immutable audit trail and strict financial guardrails.
+RazorRecover AI is an autonomous, AI-powered revenue-recovery platform designed for merchants using Razorpay test-mode payment flows. It detects revenue at risk from payment failures, bank degradation, and checkout abandonment, diagnoses root causes using an AI decision engine (`Gemini 2.5 Flash`), scores recoverability probability, and evaluates policy-bounded interventions while maintaining an immutable audit trail, human-in-the-loop review guardrails, and strict financial safety limits.
 
 ## 3. Current Phase
-**Phase 15 — Final Production Completion & Verification Pass (Completed)**
+**Phase 15 — Final Production Completion & Live Vercel Deployment (Completed)**
 
 > [!IMPORTANT]
-> RazorRecover AI is fully implemented, specification-complete, hardened, and verified across all 15 phases:
+> **RazorRecover AI is live, fully operational, and verified on Vercel:**
+> - **Autonomous Revenue Recovery & Analytics**: Live dashboard showing real-time revenue at risk, expected recovery yield, and payment degradation insights.
+> - **Human-in-the-Loop Review**: Dedicated human review queue with instant `Approve & Execute`, `Reject Case`, and `Stop Case` controls for high-value transactions (> ₹1,00,000).
 > - **Provider Abstraction & Schema Validation**: Decoupled LLM integration with `validateAIDecisionOutput` treating LLM responses as untrusted input.
 > - **Prompt Injection Defense & Context Hashing**: Deterministic SHA-256 context hashing (`hashContext`) and strict prompt structure excluding secrets, API keys, and credentials.
 > - **LLM Fallback**: Automatic safe fallback to `ESCALATE` (confidence 0.0) upon provider timeout, rate limit, or invalid response format.
 > - **Deterministic Policy Engine**: Final authority enforcing financial rules (`ALLOW`/`DENY`/`ESCALATE`), retry limits, notification limits, customer opt-in, and high-value transaction human review.
 > - **Multi-Channel Recovery**: Hinglish voice assistant calls, SMS, Email, WhatsApp notifications with contact opt-in frequency caps.
 > - **Audit Compliance Vault & System Recovery Simulator**: SHA-256 Merkle chain verification for non-repudiation, automated SOC2/GDPR compliance telemetry, and interactive multi-scenario simulator.
-> - **Production Hardening**: Strict multi-tenant isolation, RBAC role enforcement, integer paise financial safety, security headers, rate limiting, and 180 passing tests.
 
 ## 4. Architecture Overview
 ```text
