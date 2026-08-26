@@ -1,19 +1,18 @@
-/**
- * Evaluation Package Placeholder
- * Synthetic evaluation and baseline comparison metrics runner.
- * Will be implemented in Phase 1+.
- */
-
-export const EVALUATION_VERSION = '0.1.0-phase0-stub';
-
-export interface EvaluationStatus {
-  initialized: boolean;
-  version: string;
-}
-
-export function getEvaluationStatus(): EvaluationStatus {
-  return {
-    initialized: false,
-    version: EVALUATION_VERSION
-  };
-}
+export * from './config/evaluation-version';
+export * from './generator/synthetic-record.interface';
+export * from './generator/seeded-prng';
+export * from './generator/distributions';
+export * from './generator/ground-truth';
+export * from './generator/synthetic-generator';
+export * from './split/dataset-split';
+export * from './baselines/baseline.interface';
+export * from './baselines/no-recovery';
+export * from './baselines/always-retry';
+export * from './baselines/rule-based';
+export * from './baselines/ai-agent';
+export * from './metrics/business-metrics';
+export * from './metrics/decision-metrics';
+export * from './metrics/calibration';
+export * from './metrics/safety-metrics';
+export * from './runner/simulation-outcome';
+export * from './runner/evaluation-runner';

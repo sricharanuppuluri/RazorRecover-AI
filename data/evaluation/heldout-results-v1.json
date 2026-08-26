@@ -1,0 +1,514 @@
+{
+  "manifest": {
+    "dataset_version": "v1.0.0",
+    "generator_version": "v1.0.0",
+    "seed": 42,
+    "record_count": 10000,
+    "development_count": 7000,
+    "validation_count": 1500,
+    "heldout_count": 1500,
+    "generated_at": "2026-08-26T06:33:44.121Z",
+    "schema_version": "schema-v1",
+    "policy_version": "policy-v1",
+    "prompt_version": "prompt-v1",
+    "sha256_checksum": "f3962313ad28f9a00aec17ac19ec0c578a48b09580d0c77abe6b97f691471c37"
+  },
+  "held_out_evaluation": [
+    {
+      "baselineName": "No Recovery",
+      "splitName": "HELD_OUT_TEST",
+      "businessMetrics": {
+        "total_records": 1500,
+        "total_revenue_at_risk": 1421362085,
+        "potentially_recoverable_revenue": 715035543,
+        "actual_recovered_revenue": 0,
+        "total_intervention_cost": 0,
+        "net_revenue_recovered": 0,
+        "recovery_rate": 0,
+        "recovery_yield": 0,
+        "average_recovered_amount_per_successful_intervention": 0,
+        "intervention_success_rate": 0,
+        "interventions_attempted": 0,
+        "successful_interventions": 0,
+        "incremental_revenue_vs_no_recovery": 0,
+        "incremental_revenue_vs_rule_based": 0
+      },
+      "decisionMetrics": {
+        "action_selection_accuracy": 0.298,
+        "diagnosis_accuracy": 0.906,
+        "high_confidence_error_rate": 0,
+        "human_escalation_rate": 0,
+        "stop_rule_compliance": 1,
+        "tp": 0,
+        "fp": 0,
+        "tn": 781,
+        "fn": 719,
+        "precision": 0,
+        "recall": 0,
+        "f1_score": 0
+      },
+      "calibrationMetrics": [
+        {
+          "range": "0.0–0.1",
+          "min_prob": 0,
+          "max_prob": 0.1,
+          "prediction_count": 1500,
+          "average_predicted_probability": 0.5,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.1–0.2",
+          "min_prob": 0.1,
+          "max_prob": 0.2,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.15,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.2–0.3",
+          "min_prob": 0.2,
+          "max_prob": 0.3,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.25,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.3–0.4",
+          "min_prob": 0.3,
+          "max_prob": 0.4,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.35,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.4–0.5",
+          "min_prob": 0.4,
+          "max_prob": 0.5,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.45,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.5–0.6",
+          "min_prob": 0.5,
+          "max_prob": 0.6,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.55,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.6–0.7",
+          "min_prob": 0.6,
+          "max_prob": 0.7,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.65,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.7–0.8",
+          "min_prob": 0.7,
+          "max_prob": 0.8,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.75,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.8–0.9",
+          "min_prob": 0.8,
+          "max_prob": 0.9,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.85,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.9–1.0",
+          "min_prob": 0.9,
+          "max_prob": 1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.95,
+          "actual_recovery_rate": 0
+        }
+      ],
+      "safetyMetrics": {
+        "unauthorized_actions": 0,
+        "policy_limit_violations": 0,
+        "duplicate_notifications": 0,
+        "actions_after_successful_payment": 0,
+        "invalid_ai_schema_outputs_rejected": 0,
+        "total_safety_violations": 0
+      }
+    },
+    {
+      "baselineName": "Always Retry",
+      "splitName": "HELD_OUT_TEST",
+      "businessMetrics": {
+        "total_records": 1500,
+        "total_revenue_at_risk": 1421362085,
+        "potentially_recoverable_revenue": 715035543,
+        "actual_recovered_revenue": 313011808,
+        "total_intervention_cost": 106200,
+        "net_revenue_recovered": 312905608,
+        "recovery_rate": 0.4378,
+        "recovery_yield": 0.2202,
+        "average_recovered_amount_per_successful_intervention": 786461.83,
+        "intervention_success_rate": 0.3748,
+        "interventions_attempted": 1062,
+        "successful_interventions": 398,
+        "incremental_revenue_vs_no_recovery": 313011808,
+        "incremental_revenue_vs_rule_based": 313011808
+      },
+      "decisionMetrics": {
+        "action_selection_accuracy": 0.3453,
+        "diagnosis_accuracy": 0.906,
+        "high_confidence_error_rate": 0,
+        "human_escalation_rate": 0,
+        "stop_rule_compliance": 0.7718,
+        "tp": 628,
+        "fp": 434,
+        "tn": 347,
+        "fn": 91,
+        "precision": 0.5913,
+        "recall": 0.8734,
+        "f1_score": 0.7052
+      },
+      "calibrationMetrics": [
+        {
+          "range": "0.0–0.1",
+          "min_prob": 0,
+          "max_prob": 0.1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.05,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.1–0.2",
+          "min_prob": 0.1,
+          "max_prob": 0.2,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.15,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.2–0.3",
+          "min_prob": 0.2,
+          "max_prob": 0.3,
+          "prediction_count": 438,
+          "average_predicted_probability": 0.2,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.3–0.4",
+          "min_prob": 0.3,
+          "max_prob": 0.4,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.35,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.4–0.5",
+          "min_prob": 0.4,
+          "max_prob": 0.5,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.45,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.5–0.6",
+          "min_prob": 0.5,
+          "max_prob": 0.6,
+          "prediction_count": 1062,
+          "average_predicted_probability": 0.5,
+          "actual_recovery_rate": 0.3748
+        },
+        {
+          "range": "0.6–0.7",
+          "min_prob": 0.6,
+          "max_prob": 0.7,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.65,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.7–0.8",
+          "min_prob": 0.7,
+          "max_prob": 0.8,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.75,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.8–0.9",
+          "min_prob": 0.8,
+          "max_prob": 0.9,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.85,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.9–1.0",
+          "min_prob": 0.9,
+          "max_prob": 1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.95,
+          "actual_recovery_rate": 0
+        }
+      ],
+      "safetyMetrics": {
+        "unauthorized_actions": 0,
+        "policy_limit_violations": 0,
+        "duplicate_notifications": 0,
+        "actions_after_successful_payment": 0,
+        "invalid_ai_schema_outputs_rejected": 0,
+        "total_safety_violations": 0
+      }
+    },
+    {
+      "baselineName": "Rule-Based",
+      "splitName": "HELD_OUT_TEST",
+      "businessMetrics": {
+        "total_records": 1500,
+        "total_revenue_at_risk": 1421362085,
+        "potentially_recoverable_revenue": 715035543,
+        "actual_recovered_revenue": 600821523,
+        "total_intervention_cost": 105300,
+        "net_revenue_recovered": 600716223,
+        "recovery_rate": 0.8403,
+        "recovery_yield": 0.4227,
+        "average_recovered_amount_per_successful_intervention": 932952.68,
+        "intervention_success_rate": 0.6626,
+        "interventions_attempted": 972,
+        "successful_interventions": 644,
+        "incremental_revenue_vs_no_recovery": 600821523,
+        "incremental_revenue_vs_rule_based": 600821523
+      },
+      "decisionMetrics": {
+        "action_selection_accuracy": 0.7727,
+        "diagnosis_accuracy": 0.906,
+        "high_confidence_error_rate": 0,
+        "human_escalation_rate": 0,
+        "stop_rule_compliance": 1,
+        "tp": 644,
+        "fp": 328,
+        "tn": 453,
+        "fn": 75,
+        "precision": 0.6626,
+        "recall": 0.8957,
+        "f1_score": 0.7617
+      },
+      "calibrationMetrics": [
+        {
+          "range": "0.0–0.1",
+          "min_prob": 0,
+          "max_prob": 0.1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.05,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.1–0.2",
+          "min_prob": 0.1,
+          "max_prob": 0.2,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.15,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.2–0.3",
+          "min_prob": 0.2,
+          "max_prob": 0.3,
+          "prediction_count": 306,
+          "average_predicted_probability": 0.2,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.3–0.4",
+          "min_prob": 0.3,
+          "max_prob": 0.4,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.35,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.4–0.5",
+          "min_prob": 0.4,
+          "max_prob": 0.5,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.45,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.5–0.6",
+          "min_prob": 0.5,
+          "max_prob": 0.6,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.55,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.6–0.7",
+          "min_prob": 0.6,
+          "max_prob": 0.7,
+          "prediction_count": 1194,
+          "average_predicted_probability": 0.65,
+          "actual_recovery_rate": 0.5394
+        },
+        {
+          "range": "0.7–0.8",
+          "min_prob": 0.7,
+          "max_prob": 0.8,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.75,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.8–0.9",
+          "min_prob": 0.8,
+          "max_prob": 0.9,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.85,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.9–1.0",
+          "min_prob": 0.9,
+          "max_prob": 1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.95,
+          "actual_recovery_rate": 0
+        }
+      ],
+      "safetyMetrics": {
+        "unauthorized_actions": 0,
+        "policy_limit_violations": 0,
+        "duplicate_notifications": 0,
+        "actions_after_successful_payment": 0,
+        "invalid_ai_schema_outputs_rejected": 0,
+        "total_safety_violations": 0
+      }
+    },
+    {
+      "baselineName": "AI Agent",
+      "splitName": "HELD_OUT_TEST",
+      "businessMetrics": {
+        "total_records": 1500,
+        "total_revenue_at_risk": 1421362085,
+        "potentially_recoverable_revenue": 715035543,
+        "actual_recovered_revenue": 636422542,
+        "total_intervention_cost": 131200,
+        "net_revenue_recovered": 636291342,
+        "recovery_rate": 0.8901,
+        "recovery_yield": 0.4478,
+        "average_recovered_amount_per_successful_intervention": 945650.14,
+        "intervention_success_rate": 0.654,
+        "interventions_attempted": 1029,
+        "successful_interventions": 673,
+        "incremental_revenue_vs_no_recovery": 636422542,
+        "incremental_revenue_vs_rule_based": 35601019
+      },
+      "decisionMetrics": {
+        "action_selection_accuracy": 0.984,
+        "diagnosis_accuracy": 1,
+        "high_confidence_error_rate": 0.2346,
+        "human_escalation_rate": 0,
+        "stop_rule_compliance": 1,
+        "tp": 673,
+        "fp": 356,
+        "tn": 425,
+        "fn": 46,
+        "precision": 0.654,
+        "recall": 0.936,
+        "f1_score": 0.77
+      },
+      "calibrationMetrics": [
+        {
+          "range": "0.0–0.1",
+          "min_prob": 0,
+          "max_prob": 0.1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.05,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.1–0.2",
+          "min_prob": 0.1,
+          "max_prob": 0.2,
+          "prediction_count": 471,
+          "average_predicted_probability": 0.1,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.2–0.3",
+          "min_prob": 0.2,
+          "max_prob": 0.3,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.25,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.3–0.4",
+          "min_prob": 0.3,
+          "max_prob": 0.4,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.35,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.4–0.5",
+          "min_prob": 0.4,
+          "max_prob": 0.5,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.45,
+          "actual_recovery_rate": 0
+        },
+        {
+          "range": "0.5–0.6",
+          "min_prob": 0.5,
+          "max_prob": 0.6,
+          "prediction_count": 51,
+          "average_predicted_probability": 0.5,
+          "actual_recovery_rate": 0.4706
+        },
+        {
+          "range": "0.6–0.7",
+          "min_prob": 0.6,
+          "max_prob": 0.7,
+          "prediction_count": 426,
+          "average_predicted_probability": 0.6181,
+          "actual_recovery_rate": 0.5728
+        },
+        {
+          "range": "0.7–0.8",
+          "min_prob": 0.7,
+          "max_prob": 0.8,
+          "prediction_count": 228,
+          "average_predicted_probability": 0.75,
+          "actual_recovery_rate": 0.6886
+        },
+        {
+          "range": "0.8–0.9",
+          "min_prob": 0.8,
+          "max_prob": 0.9,
+          "prediction_count": 324,
+          "average_predicted_probability": 0.85,
+          "actual_recovery_rate": 0.7654
+        },
+        {
+          "range": "0.9–1.0",
+          "min_prob": 0.9,
+          "max_prob": 1,
+          "prediction_count": 0,
+          "average_predicted_probability": 0.95,
+          "actual_recovery_rate": 0
+        }
+      ],
+      "safetyMetrics": {
+        "unauthorized_actions": 0,
+        "policy_limit_violations": 0,
+        "duplicate_notifications": 0,
+        "actions_after_successful_payment": 0,
+        "invalid_ai_schema_outputs_rejected": 0,
+        "total_safety_violations": 0
+      }
+    }
+  ]
+}

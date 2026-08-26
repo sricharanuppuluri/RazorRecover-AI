@@ -1,0 +1,14 @@
+{
+  "dataset_version": "v1.0.0",
+  "generator_version": "v1.0.0",
+  "seed": 42,
+  "record_count": 10000,
+  "development_count": 7000,
+  "validation_count": 1500,
+  "heldout_count": 1500,
+  "generated_at": "2026-08-26T06:33:44.121Z",
+  "schema_version": "schema-v1",
+  "policy_version": "policy-v1",
+  "prompt_version": "prompt-v1",
+  "sha256_checksum": "f3962313ad28f9a00aec17ac19ec0c578a48b09580d0c77abe6b97f691471c37"
+}

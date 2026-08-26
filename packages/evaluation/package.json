@@ -8,7 +8,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@razorrecover/shared-types": "*"
+    "@razorrecover/shared-types": "*",
+    "@razorrecover/policy-engine": "*",
+    "@razorrecover/recovery-engine": "*"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

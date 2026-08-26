@@ -13,12 +13,13 @@
     "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
     "build:api": "npm run build --workspace=apps/api",
     "build:web": "npm run build --workspace=apps/web",
-    "build": "npm run build --workspace=packages/shared-types && npm run build --workspace=packages/policy-engine && npm run build --workspace=packages/recovery-engine && npm run build:api && npm run build:web",
+    "build": "npm run build --workspace=packages/shared-types && npm run build --workspace=packages/policy-engine && npm run build --workspace=packages/recovery-engine && npm run build --workspace=packages/evaluation && npm run build:api && npm run build:web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "db:migrate": "npm run db:migrate --workspace=apps/api",
     "db:rollback": "npm run db:rollback --workspace=apps/api",
     "db:seed": "npm run db:seed --workspace=apps/api",
+    "evaluate": "tsx packages/evaluation/src/cli.ts",
     "test": "tsx --test tests/integration/*.test.ts tests/unit/*.test.ts"
   },
   "devDependencies": {
