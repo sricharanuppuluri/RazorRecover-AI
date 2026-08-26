@@ -1,0 +1,30 @@
+{
+  "name": "razorrecover",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RazorRecover AI - AI-powered merchant revenue-recovery system",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "build:api": "npm run build --workspace=apps/api",
+    "build:web": "npm run build --workspace=apps/web",
+    "build": "npm run build --workspace=packages/shared-types && npm run build:api && npm run build:web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:migrate": "npm run db:migrate --workspace=apps/api",
+    "db:rollback": "npm run db:rollback --workspace=apps/api",
+    "db:seed": "npm run db:seed --workspace=apps/api",
+    "test": "tsx --test tests/integration/*.test.ts tests/unit/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/supertest": "^7.2.1",
+    "concurrently": "^8.2.2",
+    "supertest": "^7.2.2",
+    "typescript": "^5.3.3"
+  }
+}
